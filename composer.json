@@ -1,0 +1,11 @@
+{
+    "require": {
+        "symfony/symfony": "^4.3",
+        "tylx/laravel-component": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+	  }
+    }
+}

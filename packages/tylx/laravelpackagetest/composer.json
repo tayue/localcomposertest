@@ -1,0 +1,10 @@
+{
+    "name": "tylx/packagetest-for-laravel",
+    "authors": [
+        {
+            "name": "tylx",
+            "email": "tayueliuxiang1@sina.com"
+        }
+    ],
+    "require": {}
+}

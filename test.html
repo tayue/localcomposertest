@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    const A="sssss";
+
+    var a = 2;
+    {
+        let a = 3;
+        document.write(a); // 3
+    }
+    document.write('<br>');
+    document.write(a); // 2
+
+    var s = "abcd";
+    for(let c of s){
+        document.write("<br>"+c+"<br>\n")
+    }
+    var foo = ()=> document.write("foo test"); //因为只有一个参数，所以()可以省略
+     foo();
+
+    console.log(+0 == -0);              // true
+    console.log(+0 === -0);             // true
+    console.log(Object.is(+0, -0));     // false
+
+    console.log(NaN == NaN);            // false
+    console.log(NaN === NaN);           // false
+    console.log(Object.is(NaN, NaN));   // true
+
+    console.log(5 == 5);                // true
+    console.log(5 == "5");              // true
+    console.log(5 === 5);               // true
+    console.log(5 === "5");             // false
+    console.log(Object.is(5, 5));       // true
+    console.log(Object.is(5, "5"));     // false
+</script>
+</body>
+</html>
