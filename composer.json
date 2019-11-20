@@ -1,11 +1,13 @@
 {
     "require": {
         "symfony/symfony": "^4.3",
-        "tylx/laravel-component": "dev-master"
+        "tylx/laravel-component": "dev-master",
+        "jasny/sso": "^0.3.0"
     },
     "autoload": {
         "psr-4": {
-            "App\\": "App/"
+            "App\\": "App/",
+            "Cmd\\": "Cmd/"
 	  }
     }
 }
