@@ -1,4 +1,6 @@
 <?php
+
+use Jasny\SSO\Broker;
 use Jasny\SSO\NotAttachedException;
 use Jasny\SSO\Exception as SsoException;
 
@@ -8,7 +10,11 @@ if (isset($_GET['sso_error'])) {
     header("Location: error.php?sso_error=" . $_GET['sso_error'], true, 307);
     exit;
 }
-$broker = new Jasny\SSO\Broker(getenv('SSO_SERVER'), getenv('SSO_BROKER_ID'), getenv('SSO_BROKER_SECRET'));
+
+$ssoServer="http://local.test.com/ssodemo/server";
+$ssoBrokerId="Alice";
+$ssoBrokerSecret="8iwzik1bwd";
+$broker = new Jasny\SSO\Broker($ssoServer, $ssoBrokerId, $ssoBrokerSecret);
 $broker->attach(true);
 
 try {

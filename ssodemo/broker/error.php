@@ -1,10 +1,13 @@
 <?php
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-$broker = new Jasny\SSO\Broker(getenv('SSO_SERVER'), getenv('SSO_BROKER_ID'), getenv('SSO_BROKER_SECRET'));
+$ssoServer="http://local.test.com/ssodemo/server";
+$ssoBrokerId="Alice";
+$ssoBrokerSecret="8iwzik1bwd";
+$broker = new Jasny\SSO\Broker($ssoServer, $ssoBrokerId, $ssoBrokerSecret);
 $error = $_GET['sso_error'];
 
-?>
+use Jasny\SSO\Broker; ?>
 <!doctype html>
 <html>
     <head>

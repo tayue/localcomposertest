@@ -73,8 +73,13 @@ use Symfony\Component\Routing\RouteCompiler;
 //
 //$parameters = $matcher->match('/archive/foo');
 //// throws ResourceNotFoundException
-
-
+///
+session_start();
+echo session_id()."____\r\n";
+echo session_status()."__";
+session_start();
+echo session_id()."@@@@@@@@@@\r\n";
+echo session_status()."$$$$$$$$$";
 
 use Symfony\Component\Workflow\DefinitionBuilder;
 use Symfony\Component\Workflow\MarkingStore\MethodMarkingStore;

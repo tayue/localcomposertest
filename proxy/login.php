@@ -1,10 +1,9 @@
 <?php
-use Jasny\SSO\NotAttachedException;
-require_once __DIR__ . '/../../vendor/autoload.php';
+include './Proxy.php';
 $ssoServer="http://local.test.com/ssodemo/server";
 $ssoBrokerId="Alice";
 $ssoBrokerSecret="8iwzik1bwd";
-$broker = new Jasny\SSO\Broker($ssoServer, $ssoBrokerId, $ssoBrokerSecret);
+$broker = new Proxy($ssoServer, $ssoBrokerId, $ssoBrokerSecret);
 $broker->attach(true);
 
 try {
