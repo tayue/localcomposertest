@@ -1,5 +1,5 @@
 <?php
-require 'predis/autoload.php';//引入predis相关包  
+require './vendor/autoload.php';//引入predis相关包
 //redis实例  
 $servers = array(
     'tcp://192.168.99.88:9001',
@@ -29,5 +29,4 @@ $name5 = $client->get('a4');
 $name6 = $client->get('a5');
 $name7 = $client->get('a6');
 $name8 = $client->get('a7');
-var_dump($name1, $name2, $name3,$name4,$name5, $name6, $name7,$name8);die;
-?>  
+var_dump($name1, $name2, $name3,$name4,$name5, $name6, $name7,$name8);die();

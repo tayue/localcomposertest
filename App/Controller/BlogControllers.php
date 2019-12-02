@@ -1,12 +1,17 @@
 <?php
-
+/**
+ * A test class
+ *
+ * @param  foo bar
+ * @return baz
+ */
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-class BlogControllers extends AbstractController
+class BlogControllers
 {
     // This property is used by the marking store
     // 此属性被marking stroe所用
@@ -45,11 +50,16 @@ class BlogControllers extends AbstractController
 
     /**
      * 匹配 URL: /blog/*
-     * @Route("/blog/{slug}", name="blog_show")
-     * @param mixed $slug
+     * @Route("/blog/{id}", name="blog_show")
+     * @param mixed $id
      */
-    public function show($slug)
-    {
-        echo "show" . $slug;
+    public function show($id)
+    {echo "show_______________";
+        echo "id:" . $id;
+    }
+
+    public function article($id,$title)
+    {  echo "article_______________";
+      var_dump($id,$title);
     }
 }
