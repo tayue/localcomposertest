@@ -1,0 +1,12 @@
+
+filebeat:
+  prospectors:
+    - input_type: log
+      paths:  # ÕÀÊÈÆÄµÄath
+          - /tmp/*.log
+  registry_file: /usr/share/filebeat/data/registry/registry  # Õ¸öþ¼Ç¼È־¶Á¡µÄ»Ö£¬È¹ûÖÆ£¬¿ÉԴӼÇ¼µÄ»Ö¿ªʼȡÈ־
+
+output:
+  elasticsearch:  # ÎÕÀÊÊ³ölasticsearch£¬Ҳ¿ÉÔäµ½logstash
+    index: "test_filebeat"  #  kibanaÖµÄ÷    hos
+    hosts: ["elasticsearch:9200"] # elasticsearchµØ·
