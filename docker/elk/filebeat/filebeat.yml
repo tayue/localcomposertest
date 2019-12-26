@@ -1,12 +1,24 @@
+# 详情如下：
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/nginx/*.log
+  scan_frequency: 10s
 
-filebeat:
-  prospectors:
-    - input_type: log
-      paths:  # ÕÀÊÈÆÄµÄath
-          - /tmp/*.log
-  registry_file: /usr/share/filebeat/data/registry/registry  # Õ¸öþ¼Ç¼È־¶Á¡µÄ»Ö£¬È¹ûÖÆ£¬¿ÉԴӼÇ¼µÄ»Ö¿ªʼȡÈ־
+# 7.x的版本中需要禁用此索引生命周期，否则在指定es索引名字的时候会有问题
+setup.ilm.enabled: false
+# 添加模板配置，否则无法指定es的索引名
+setup.template.name: "actionlog"
+setup.template.pattern: "actionlog-*"
 
-output:
-  elasticsearch:  # ÎÕÀÊÊ³ölasticsearch£¬Ҳ¿ÉÔäµ½logstash
-    index: "test_filebeat"  #  kibanaÖµÄ÷    hos
-    hosts: ["elasticsearch:9200"] # elasticsearchµØ·
+output.elasticsearch:
+  #worker: 1
+  #bulk_max_size: 1500
+  hosts: ["192.168.99.88:9200"]
+  index: "actionlog-%{+yyyy.MM.dd}"
+  #pipeline: "actionlog"
+
+# Logging
+logging.level: warning
+logging.to_files: true
