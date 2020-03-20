@@ -13,7 +13,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/articles/{id:\d+}[/{title}]', 'App\Controller\BlogControllers@article');
 });
 
-$class = new \ReflectionClass('App\Controller\BlogControllers');
+$class = new \ReflectionClass('App\Controller\BlogController');
 var_dump($class->getDocComment());
 $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
 print_r($methods);

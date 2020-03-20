@@ -2,7 +2,7 @@
 require './vendor/autoload.php';
 
 
-use App\Controller\BlogControllers;
+use App\Controller\BlogController;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
@@ -111,13 +111,13 @@ $blogPostWorkflow = $workflow;
 //$newsletterWorkflow = ...
 
 $registry = new Registry();
-$registry->addWorkflow($blogPostWorkflow, new InstanceOfSupportStrategy(BlogControllers::class));
+$registry->addWorkflow($blogPostWorkflow, new InstanceOfSupportStrategy(BlogController::class));
 //$registry->addWorkflow($newsletterWorkflow, new InstanceOfSupportStrategy(Newsletter::class));
 
 
 
 
-$blogPost = new BlogControllers();
+$blogPost = new BlogController();
 $workflow = $registry->get($blogPost);
 
 $res=$workflow->can($blogPost, 'publish'); // False

@@ -19,6 +19,8 @@ namespace Grpc;
 
 use Swoole\Coroutine\Channel;
 
+use Swoole\Coroutine\Http2\Client as SwooleHttp2Client;
+
 class Client
 {
     const CLOSE_KEYWORD = '>>>SWOOLE|CLOSE<<<';
@@ -102,6 +104,21 @@ class Client
     private $client;
     private $timeout;
 
+    private function buildHttp2Client(): SwooleHttp2Client
+    {
+        $httpClient = new SwooleHttp2Client($this->host, $this->port, $this->ssl);
+        $httpClient->set($this->opts);
+        return $httpClient;
+    }
+
+    public function getHttpClient(): SwooleHttp2Client
+    {
+        if (! $this->client instanceof SwooleHttp2Client) {
+            $this->client = $this->buildHttp2Client();
+        }
+        return $this->client;
+    }
+
     public static function numStats(): array
     {
         return self::$numStats;
@@ -158,25 +175,38 @@ class Client
 
     public function start(): bool
     {
+        echo "haha starting.....................\r\n";
         if ($this->recvCid !== 0 || $this->sendCid !== 0) {
+            echo "eeee\r\n";
             trigger_error('This client has started yet and it\'s running.', E_USER_WARNING);
             return false;
         }
         if ($this->mainCid = \Swoole\Coroutine::getuid() <= 0) {
             throw new \BadMethodCallException('You must start it in an alone coroutine.');
         }
-        if (!$this->client->connect()) {
+
+        if (!$this->client->connect()) { echo "ddd\r\n";
             return false;
         }
         // receive wait
-        go(function () {
+        echo "cd..................\r\n";
+        \Swoole\Coroutine::create(function () {
             $this->recvCid = \Co::getuid();
             // start recv loop
             while (true) {
+
                 echo "receiver-------------------\r\n";
+
+
+
                 $response = $this->client->recv(-1);
+
+
+                echo "back receiver\r\n";
+                var_dump($response);
+
                 if (self::$debug) {
-                    var_dump($response."###\r\n");
+
                     if ($response === false && $this->client->errCode !== 0) {
                         var_dump($this->client->errCode);
                         var_dump($this->client->errMsg);
@@ -266,7 +296,7 @@ class Client
 
         if ($this->sendYield) {
             // send wait
-            go(function () {
+            \Swoole\Coroutine::create(function () {
                 $this->sendCid = \Co::getuid();
                 $this->sendChannel = new Channel(0);
                 $this->sendRetChannel = new Channel(0);
@@ -350,16 +380,17 @@ class Client
 
     public function send(\swoole_http2_request $request): int
     {
+      print_r($this->client);
         if (!$this->isConnected()) {
             return 0;
         }
         if ($this->sendYield) {echo "1\r\n";
             $this->sendChannel->push($request);
             $streamId = $this->sendRetChannel->pop();
-        } else {echo "2\r\n";
+        } else {echo "2\r\n"; print_r($this->client);
             $streamId = $this->client->send($request);
-        }var_dump($streamId);
-        var_dump(self::$channelPool->get());
+        }var_dump($streamId."%%%%%%%%%");
+
         if ($streamId > 0) {
             $this->recvChannelMap[$streamId] = self::$channelPool->get();
         }
@@ -379,14 +410,22 @@ class Client
         }
     }
 
-    public function recv(int $streamId, float $timeout = null)
+    public function recv(int $streamId,float $timeout = null)
     {
+        try{
         if (!$this->isConnected() || $streamId <= 0) {
             return false;
         }
+
+      //  $streamId = $this->send($request);
+        echo "1111111111111\r\n";
+
         $channel = $this->recvChannelMap[$streamId] ?? null;
+
         if ($channel) {
+            echo "2222222222222\r\n";
             $response = $channel->pop($timeout === null ? $this->timeout : $timeout);
+            echo "3333333333333333\r\n";
             // timeout
             if ($response === false && $channel->errCode === -1) {
                 unset($this->recvChannelMap[$streamId]);
@@ -394,7 +433,11 @@ class Client
 
             return $response;
         }
+        }catch (\Exception $e){
+            echo "ddddddddddddddddd\r\n";
+            echo $e->getTraceAsString();
 
+        }
         // the channel is not exist or you recv too late
         return false;
     }

@@ -18,17 +18,36 @@
 //
 namespace Helloworld;
 
+use Grpc\Backoff;
+
 /**
  * The greeting service definition.
  */
-class GreeterClient extends \Grpc\BaseStub {
+class GreeterClient extends \Grpc\BaseStub
+{
+
+    public static function retry($times, callable $callback, $sleep = 0)
+    {
+        $backoff = new Backoff($sleep);
+        beginning:
+        try {
+            return $callback();
+        } catch (\Throwable $e) {
+            if (--$times < 0) {
+                throw $e;
+            }
+            $backoff->sleep();
+            goto beginning;
+        }
+    }
 
     /**
      * @param string $hostname hostname
      * @param array $opts channel options
      * @param \Grpc\Channel $channel (optional) re-use channel object
      */
-    public function __construct($hostname, $opts = []) {
+    public function __construct($hostname, $opts = [])
+    {
         parent::__construct($hostname, $opts);
     }
 
@@ -40,11 +59,20 @@ class GreeterClient extends \Grpc\BaseStub {
      * @return \Helloworld\HelloReply[]|\Grpc\StringifyAble[]
      */
     public function SayHello(\Helloworld\HelloRequest $argument,
-      $metadata = [], $options = []) {
+                             $metadata = [], $options = [])
+    {
+
         return $this->_simpleRequest('/helloworld.Greeter/SayHello',
-        $argument,
-        ['\Helloworld\HelloReply', 'decode'],
-        $metadata, $options);
+            $argument,
+            ['\Helloworld\HelloReply', 'decode'],
+            $metadata, $options);
+    }
+
+    public function SayHello1($metadata = [], $options = [])
+    {
+        return $this->_clientStreamRequest('/helloworld.Greeter/SayHello',
+            ['\Helloworld\HelloReply', 'decode'],
+            $metadata, $options);
     }
 
 }

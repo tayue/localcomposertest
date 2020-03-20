@@ -18,9 +18,28 @@
 namespace Grpc;
 
 use Google\Protobuf\Internal\Message;
+use Grpc\Parser;
+
+use Helloworld\GreeterClient;
+
+
 
 class BaseStub extends VirtualClient
 {
+    /**
+     * @var null|GrpcClient
+     */
+    private $grpcClient;
+
+    protected function buildRequest(string $method, Message $argument): Request
+    {
+        return new Request($method, $argument);
+    }
+
+    /**
+     * @var bool
+     */
+    private $initialized = false;
     /**
      * Call a remote method that takes a single argument and has a
      * single output.
@@ -41,16 +60,65 @@ class BaseStub extends VirtualClient
         array $metadata = [],
         array $options = []
     ) {
-        $request = new \swoole_http2_request;
-        $request->method = 'POST';
-        $request->path = $method;
-        $request->data = Parser::serializeMessage($argument);
-        $streamId = $this->send($request);
-        echo $streamId." ##\r\n";
-        return Parser::parseToResultArray(
-            $this->recv($streamId),
-            $deserialize
-        );
+        try{
+
+
+        $streamId = GreeterClient::retry(3, function () use ($method,$options,$argument) {
+
+            echo "pre send\r\n";
+            $streamId = $this->send($this->buildRequest($method,$argument));
+            echo "back send streamId:{$streamId}\r\n";
+            if ($streamId === 0) {
+                echo "enter----------------\r\n";
+                $this->init($options);
+                // The client should not be used after this exception
+                throw new \Exception('Failed to send the request to server', 11);
+            }
+            return $streamId;
+
+        }, 100);
+
+        echo "streamId:{$streamId}\r\n";
+
+        $res=$this->client->getClient()->recv(-1);
+        print_r($res);
+
+      Parser::parseToResultArray($this->recv($streamId), $deserialize);
+
+    }catch (\Exception $e){
+            echo $e->getMessage();
+            print_r($e->getTraceAsString());
+        }
+
+
+//        print_r($request);
+//        echo "pre send \r\n";
+//        $streamId = $this->send($request);
+//        echo "back send \r\n";
+//        if($streamId){
+//            echo "enter&&&&&&&&&&&&&&&&&&&&&&&&&&&&\r\n";
+//        }else{
+//            die("------------------------------------------");
+//        }
+
+
+    }
+
+    protected function init($options)
+    {
+        echo "init @@@@@@\r\n";
+        $this->options=$options;
+        $this->client = new Client($this->hostname, $this->options);
+        echo "init1 @@@@@@\r\n";
+        if (!$this->start()) {
+            $message = sprintf(
+                'Grpc client start failed with error code %d when connect to %s',
+                $this->client->getErrCode(),
+                $this->hostname
+            );
+            throw new GrpcClientException($message, StatusCode::INTERNAL);
+        }
+        $this->initialized = true;
     }
 
     /**

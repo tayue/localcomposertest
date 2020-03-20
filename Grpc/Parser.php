@@ -79,6 +79,7 @@ class Parser
      */
     public static function parseToResultArray($response, $deserialize): array
     {
+
         if (!$response) {
             return ['No response', 1, $response];
         } elseif ($response->statusCode !== 200) {
@@ -93,6 +94,31 @@ class Parser
             $status = (int)($response->headers['grpc-status'] ?? 0 ?: 0);
             return [$reply, $status, $response];
         }
+    }
+
+    /**
+     * @param null|\swoole_http2_response $response
+     * @param $deserialize
+     * @return \Grpc\StringifyAble[]|Message[]|\swoole_http2_response[]
+     */
+    public static function parseResponse($response, $deserialize): array
+    {
+        if (! $response) {
+            return ['No response', 1, $response];
+        }
+        if ($response->statusCode !== 200) {
+            $message = $response->headers['grpc-message'] ?? 'Http status Error';
+            $code = $response->headers['grpc-status'] ?? ($response->errCode ?: $response->statusCode);
+            return [$message, (int) $code, $response];
+        }
+        $grpc_status = (int) ($response->headers['grpc-status'] ?? 0);
+        if ($grpc_status !== 0) {
+            return [$response->headers['grpc-message'] ?? 'Unknown error', $grpc_status, $response];
+        }
+        $data = $response->data;
+        $reply = self::deserializeMessage($deserialize, $data);
+        $status = (int) ($response->headers['grpc-status'] ?? 0 ?: 0);
+        return [$reply, $status, $response];
     }
 
 }

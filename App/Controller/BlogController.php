@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-class BlogControllers
+class BlogController
 {
     // This property is used by the marking store
     // 此属性被marking stroe所用

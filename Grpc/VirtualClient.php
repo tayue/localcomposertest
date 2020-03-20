@@ -25,10 +25,16 @@ class VirtualClient
     /**
      * @var Client|null
      */
-    private $client;
+    protected $client;
+
+    protected $hostname;
+
+    protected $options;
 
     public function __construct(string $hostname, array $opts = [])
     {
+        $this->hostname=$hostname;
+        $this->options=$opts;
         if (!empty($opts['use'])) {
             if (!($opts['use'] instanceof Client)) {
                 throw new \InvalidArgumentException('parameter use must be instanceof Grpc/Client');
@@ -46,6 +52,7 @@ class VirtualClient
 
     public function start(): bool
     {
+        var_dump($this->client->isRunning(),"md");
         return $this->client->isRunning() ? false : $this->client->start();
     }
 
@@ -59,91 +66,91 @@ class VirtualClient
         // numStats static method body hook
         return \Grpc\Client::numStats();
     }
-    
+
     public static function debug(bool $enable = true): void
     {
         // debug static method body hook
         \Grpc\Client::debug($enable);
     }
-    
+
     public function __get($name)
     {
         // __get non-static method body hook
         return $this->client->__get($name);
     }
-    
+
     public function stats($key = null)
     {
         // stats non-static method body hook
         return $this->client->stats($key);
     }
-    
+
     public function isConnected(): bool
     {
         // isConnected non-static method body hook
         return $this->client->isConnected();
     }
-    
+
     public function isRunning(): bool
     {
         // isRunning non-static method body hook
         return $this->client->isRunning();
     }
-    
+
     public function isStreamExist(int $streamId)
     {
         // isStreamExist non-static method body hook
         return $this->client->isStreamExist($streamId);
     }
-    
+
     public function setTimeout(float $timeout): void
     {
         // setTimeout non-static method body hook
         $this->client->setTimeout($timeout);
     }
-    
+
     public function openStream(string $path, $data = null, string $method = 'POST'): int
     {
         // openStream non-static method body hook
         return $this->client->openStream($path, $data, $method);
     }
-    
+
     public function send(\swoole_http2_request $request): int
     {
         // send non-static method body hook
         return $this->client->send($request);
     }
-    
+
     public function write(int $streamId, $data, bool $end = false): bool
     {
         // write non-static method body hook
         return $this->client->write($streamId, $data, $end);
     }
-    
-    public function recv(int $streamId, ?float $timeout = null)
+
+    public function recv(int $streamId,?float $timeout = null)
     {
         // recv non-static method body hook
         return $this->client->recv($streamId, $timeout);
     }
-    
+
     public function waitForAll(): bool
     {
         // waitForAll non-static method body hook
         return $this->client->waitForAll();
     }
-    
+
     public function close($yield = false): bool
     {
         // close non-static method body hook
         return $this->client->close($yield);
     }
-    
+
     public function closeWait($yield = 3.0): bool
     {
         // closeWait non-static method body hook
         return $this->client->closeWait($yield);
     }
-    
+
     public function closeAfter(float $time): bool
     {
         // closeAfter non-static method body hook

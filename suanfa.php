@@ -88,16 +88,15 @@ function select_sort($arr)
 
 
 //插入排序
-function insertSort($arr)
-{
-    $len = count($arr);
-    for ($i = 1, $i < $len; $i++;) {
+function insertSort($arr) {
+    $len=count($arr);
+    for($i=1, $i<$len; $i++;) {
         $tmp = $arr[$i];
         //内层循环控制，比较并插入
-        for ($j = $i - 1; $j >= 0; $j--) {
-            if ($tmp < $arr[$j]) {
+        for($j=$i-1;$j>=0;$j--) {
+            if($tmp < $arr[$j]) {
                 //发现插入的元素要小，交换位置，将后边的元素与前面的元素互换
-                $arr[$j + 1] = $arr[$j];
+                $arr[$j+1] = $arr[$j];
                 $arr[$j] = $tmp;
             } else {
                 //如果碰到不需要移动的元素，由于是已经排序好是数组，则前面的就不需要再次比较了。
@@ -109,34 +108,33 @@ function insertSort($arr)
 }
 
 
+
+
 /**
  * mergeSort 归并排序
  * 是开始递归函数的一个驱动函数
  * @param &$arr array 待排序的数组
  */
-function mergeSort(&$arr)
-{
+function mergeSort(&$arr) {
     $len = count($arr);//求得数组长度
-    mSort($arr, 0, $len - 1);
+    mSort($arr, 0, $len-1);
 }
-
 /**
  * 实际实现归并排序的程序
  * @param &$arr array 需要排序的数组
  * @param $left int 子序列的左下标值
  * @param $right int 子序列的右下标值
  */
-function mSort(&$arr, $left, $right)
-{
+function mSort(&$arr, $left, $right) {
 
-    if ($left < $right) {
+    if($left < $right) {
         //说明子序列内存在多余1个的元素，那么需要拆分，分别排序，合并
         //计算拆分的位置，长度/2 去整
-        $center = floor(($left + $right) / 2);
+        $center = floor(($left+$right) / 2);
         //递归调用对左边进行再次排序：
         mSort($arr, $left, $center);
         //递归调用对右边进行再次排序
-        mSort($arr, $center + 1, $right);
+        mSort($arr, $center+1, $right);
         //合并排序结果
         mergeArray($arr, $left, $center, $right);
     }
@@ -144,36 +142,35 @@ function mSort(&$arr, $left, $right)
 
 /**
  * 将两个有序数组合并成一个有序数组
- * @param &$arr , 待排序的所有元素
- * @param $left , 排序子数组A的开始下标
- * @param $center , 排序子数组A与排序子数组B的中间下标，也就是数组A的结束下标
- * @param $right , 排序子数组B的结束下标（开始为$center+1)
+ * @param &$arr, 待排序的所有元素
+ * @param $left, 排序子数组A的开始下标
+ * @param $center, 排序子数组A与排序子数组B的中间下标，也就是数组A的结束下标
+ * @param $right, 排序子数组B的结束下标（开始为$center+1)
  */
-function mergeArray(&$arr, $left, $center, $right)
-{
+function mergeArray(&$arr, $left, $center, $right) {
     //设置两个起始位置标记
     $a_i = $left;
-    $b_i = $center + 1;
-    while ($a_i <= $center && $b_i <= $right) {
+    $b_i = $center+1;
+    while($a_i<=$center && $b_i<=$right) {
         //当数组A和数组B都没有越界时
-        if ($arr[$a_i] < $arr[$b_i]) {
+        if($arr[$a_i] < $arr[$b_i]) {
             $temp[] = $arr[$a_i++];
         } else {
             $temp[] = $arr[$b_i++];
         }
     }
     //判断 数组A内的元素是否都用完了，没有的话将其全部插入到C数组内：
-    while ($a_i <= $center) {
+    while($a_i <= $center) {
         $temp[] = $arr[$a_i++];
     }
     //判断 数组B内的元素是否都用完了，没有的话将其全部插入到C数组内：
-    while ($b_i <= $right) {
+    while($b_i <= $right) {
         $temp[] = $arr[$b_i++];
     }
 
     //将$arrC内排序好的部分，写入到$arr内：
-    for ($i = 0, $len = count($temp); $i < $len; $i++) {
-        $arr[$left + $i] = $temp[$i];
+    for($i=0, $len=count($temp); $i<$len; $i++) {
+        $arr[$left+$i] = $temp[$i];
     }
 
 }
@@ -194,87 +191,68 @@ function mergeArray(&$arr, $left, $center, $right)
 
 //算法练习
 
-function kuaisupaixu($arr)
-{ //快速排序
-    $lenght = count($arr);
-    if ($lenght <= 1) {
+function kuaisupaixu($arr){ //快速排序
+    $lenght=count($arr);
+    if($lenght<=1){
         return $arr;
     }
-    $left = $right = array();
-    for ($i = 1; $i < $lenght; $i++) {
-        if ($arr[0] > $arr[$i]) {
-            $left[] = $arr[$i];
-        } else {
-            $right[] = $arr[$i];
+    $left=$right=array();
+    for($i=1;$i<$lenght;$i++){
+        if($arr[0]>$arr[$i]){
+            $left[]=$arr[$i];
+        }else{
+            $right[]=$arr[$i];
         }
     }
-    $left = kuaisupaixu($left);
-    $right = kuaisupaixu($right);
-    $arr = array_merge($left, array($arr[0]), $right);
+    $left=kuaisupaixu($left);
+    $right=kuaisupaixu($right);
+    $arr=array_merge($left,array($arr[0]),$right);
     return $arr;
 }
 
 
-function erfenchazhao($arr, $searchVal)
-{ //二分查找法
-    $lowIndex = 0;
-    $maxIndex = count($arr) - 1;
-    while ($lowIndex <= $maxIndex) {
-        $middleIndex = floor(($lowIndex + $maxIndex) / 2);
-        if ($searchVal == $arr[$middleIndex]) {
+function erfenchazhao($arr,$searchVal){ //二分查找法
+    $lowIndex=0;
+    $maxIndex=count($arr)-1;
+    while($lowIndex<=$maxIndex){
+        $middleIndex=floor(($lowIndex+$maxIndex)/2);
+        if($searchVal==$arr[$middleIndex]){
             return $middleIndex;
-        } else if ($arr[$middleIndex] > $searchVal) {
-            $maxIndex = $middleIndex - 1;
-        } else if ($arr[$middleIndex] < $searchVal) {
-            $lowIndex = $middleIndex + 1;
+        }else if($arr[$middleIndex]>$searchVal){
+            $maxIndex=$middleIndex-1;
+        }else if($arr[$middleIndex]<$searchVal){
+            $lowIndex=$middleIndex+1;
         }
     }
 }
 
-function xuanzhepaixu($arr)
-{ //选择排序
-    $len = count($arr);
-    for ($i = 0; $i < $len; $i++) {
-        $minValPos = $i; //假设当前值的位置为最小值位置
-        for ($j = $i + 1; $j < $len; $j++) {
-            if ($arr[$j] < $arr[$minValPos]) {
-                $minValPos = $j; //将较小值那个位置标识下
+function xuanzhepaixu($arr){ //选择排序
+    $len=count($arr);
+    for($i=0;$i<$len;$i++){
+        $minValPos=$i; //假设当前值的位置为最小值位置
+        for ($j=$i+1;$j<$len;$j++){
+            if($arr[$j]<$arr[$minValPos]){
+                $minValPos=$j; //将较小值那个位置标识下
             }
         }
-        if ($i != $minValPos) {
-            $temp = $arr[$minValPos];
-            $arr[$minValPos] = $arr[$i];
-            $arr[$i] = $temp;
+        if($i!=$minValPos){
+            $temp=$arr[$minValPos];
+            $arr[$minValPos]=$arr[$i];
+            $arr[$i]=$temp;
         }
     }
-    return $arr;
+ return $arr;
 }
 
-function maopaosort($arr)
-{ //冒泡排序
-    $len = count($arr);
-    for ($i = 0; $i < $len; $i++) {
-        for ($j = $i + 1; $j < $len; $j++) {
-            if ($arr[$i] >= $arr[$j]) {
-                $temp = $arr[$i];
-                $arr[$i] = $arr[$j];
-                $arr[$j] = $temp;
-            }
-        }
-    }
-    return $arr;
-}
-
-function charupaixu($arr)
-{ //插入排序
-    $len = count($arr);
-    for ($i = 1; $i < $len; $i++) {
-        $insertVal = $arr[$i];//插入的元素
-        for ($j = $i - 1; $j >= 0; $j--) {
-            if ($arr[$j] > $insertVal) { //如果发现要插入的元素要小那么互换位置
-                $arr[$j + 1] = $arr[$j]; //内层循环中用 $j+1 来代表后一个位置
-                $arr[$j] = $insertVal;
-            } else {
+function charupaixu($arr){ //插入排序
+    $len=count($arr);
+    for($i=1;$i<$len;$i++){
+        $insertVal=$arr[$i];//插入的元素
+        for($j=$i-1;$j>=0;$j--){
+            if($arr[$j]>$insertVal){ //如果发现要插入的元素要小那么互换位置
+                  $arr[$j+1]=$arr[$j]; //内层循环中用 $j+1 来代表后一个位置
+                  $arr[$j]=$insertVal;
+            }else{
                 //如果碰到不需要移动的元素，由于是已经排序好是数组，则前面的就不需要再次比较了。
                 break;
             }
@@ -284,12 +262,13 @@ function charupaixu($arr)
 }
 
 
-$arr = array(8, 10, 3, 1, 3, 11, 6, 4, 9, 22);
 
+
+$arr=array(8,10,3,1,3,11,6,4,9);
 
 //$arr=array(1,2,3,4,7,8,9);
 
-$dd = maopaosort($arr);
+$dd=charupaixu($arr);
 var_dump($dd);
 
 

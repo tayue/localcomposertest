@@ -16,11 +16,12 @@ $http->on('workerStart', function (swoole_http_server $server) {
 });
 $http->on('request', function (swoole_http_request $request, swoole_http_response $response) use ($http) {
     $path = $request->server['request_uri'];
+    var_dump($path);
+
     if($path=='/favicon.ico'){
          return;
     }
-    var_dump($path);
-    var_dump($request->rawContent());
+
     $route = [
         '/helloworld.Greeter/SayHello' => function (...$args)use ($http) {
             [$server, $request, $response] = $args;
@@ -29,16 +30,18 @@ $http->on('request', function (swoole_http_request $request, swoole_http_respons
             if ($request_message) {
                 $response_message = new HelloReply();
                 $response_message->setMessage('Hello ' . $request_message->getName());
-                $response->header('content-type', 'application/grpc');
-                $response->header('trailer', 'grpc-status, grpc-message');
-                $trailer = [
-                    "grpc-status" => "0",
-                    "grpc-message" => ""
-                ];
-                foreach ($trailer as $trailer_name => $trailer_value) {
-                    $response->trailer($trailer_name, $trailer_value);
-                }
-                $http->send($request->streamId,Grpc\Parser::serializeMessage($response_message));
+//                $response->header('content-type', 'application/grpc');
+//                $response->header('trailer', 'grpc-status, grpc-message');
+//                $trailer = [
+//                    "grpc-status" => "0",
+//                    "grpc-message" => ""
+//                ];
+//                foreach ($trailer as $trailer_name => $trailer_value) {
+//                    $response->trailer($trailer_name, $trailer_value);
+//                }
+                echo "streamId:".$request->streamId."\r\n";
+
+               // echo "streamddddddddddd:".$request->streamId."\r\n";
                 $response->end(Grpc\Parser::serializeMessage($response_message));
                 return true;
             }

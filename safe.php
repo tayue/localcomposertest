@@ -1,8 +1,4 @@
 <?php
-
-
-
-die("ss");
 /**
  * Created by PhpStorm.
  * User: hdeng

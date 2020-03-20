@@ -25,7 +25,7 @@ class ClientStreamingCall extends StreamingCall
 {
     private $received = false;
 
-    public function recv(float $timeout = GRPC_DEFAULT_TIMEOUT)
+    public function recv(float $timeout = 5)
     {
         if (!$this->received) {
             $this->received = true;
