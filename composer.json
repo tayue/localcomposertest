@@ -10,7 +10,8 @@
         "vlucas/phpdotenv": "^4.1",
         "hyperf/rate-limit": "^1.1",
         "google/protobuf": "^3",
-        "codeception/codeception": "*"
+        "codeception/codeception": "*",
+        "kosinix/grafika": "dev-master"
     },
     "autoload": {
         "psr-4": {
