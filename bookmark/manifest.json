@@ -1,0 +1,31 @@
+﻿{
+	"manifest_version": 2,
+	"name": "cnblogs.com article information",
+	"version": "0.0.1",
+	"background": { "scripts": ["jquery-2.0.0.min.js", "background.js"] },
+	"page_action": {
+		"default_icon": {
+			"19": "cnblogs_19.png",
+			"38": "cnblogs_38.png"
+		},
+		"default_title": "cnblogs.com article information",
+		"default_popup": "popup.html"
+	},
+	"permissions": [
+		"http://*/*",
+		"https://*/*",
+		"bookmarks",
+		"webRequest",
+		"storage",
+		"contextMenus",
+		"tabs",
+		"history",
+		"activeTab",
+     	"cookies"
+   ],
+	"content_scripts":[{
+		"matches":["https://www.cnblogs.com/*"],
+		"js":["jquery-2.0.0.min.js", "content_script.js"],
+		"run_at": "document_start"
+	}]
+}

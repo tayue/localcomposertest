@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form name="test" action="" method="post">
+    <input id="input" type="text" required="required" placeholder="请输入4-11位字母加数字的密码" pattern="^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{4,14}$" oninput="this.setCustomValidity('')">
+    <input type="submit" onclick="setMyText()">
+</form>
+
+<p id="demo"></p>
+<script>
+
+    function sleep(ms) {
+        return new Promise(function(resolve, reject) {
+            setTimeout(resolve,ms);
+        })
+    }
+  let promise=  (function () {
+         console.log("AAA")
+         return sleep(5000)
+     })();
+
+    promise.then((x) => console.log(x)).then(() => console.log("then CCC"));
+
+    // AAA
+    // BBB (5000ms后)
+
+    // var add = (function () {
+    //     var counter = 0;
+    //     return function () {return counter += 1;}
+    // })();
+    //
+    // console.log(add());
+    //
+    // console.log(add());
+    //
+    // function addone() {
+    //     var counter = 0;
+    //     function plus() {counter += 1;}
+    //     plus();
+    //     return counter;
+    // }
+    // console.log("---------------------");
+    // console.log(addone());
+    //
+    // console.log(addone());
+
+    //
+    // function setMyText(){
+    //     var obj = document.getElementById("input");
+    //     if (obj.validity.patternMismatch === true) {
+    //         obj.setCustomValidity("密码是必填的");
+    //     } else {
+    //         obj.setCustomValidity('');
+    //     }
+    // }
+    //
+    // function myFunction() {
+    //     var inpObj = document.getElementById("id1");
+    //     console.log(inpObj);
+    //     if (inpObj.checkValidity() == false) {
+    //         document.getElementById("demo").innerHTML = inpObj.validationMessage;
+    //     }
+    // }
+
+    // try {
+    //     window.a.b !== 2
+    // } catch(err){
+    //     alert(err) // 可执行
+    //     alert(123) // 可执行
+    // }
+
+    // var txt="";
+    // function message()
+    // {
+    //     try {
+    //         var x="";
+    //         if(x == "")  throw "值为空";
+    //     } catch(err) {console.log(err);
+    //         txt="本页有一个错误。\n\n";
+    //         txt+="错误描述：" + err + "\n\n";
+    //         txt+="点击确定继续。\n\n";
+    //         alert(txt);
+    //     }
+    // }
+    // var x = 15 * 5;
+    // debugger;
+    // message();
+
+    var person = [];
+    person["firstName"] = ["John","tayue"];
+    person["lastName"] = "Doe";
+    person["age"] = 46;
+    console.log(person['firstName'][1]);
+    console.log(person.firstName);
+    var x = person.length;         // person.length 返回 0
+    var y = person[0];             // person[0] 返回 undefined
+
+    // var person={fname:"John",lname:"Doe",age:25};
+    // var txt='';
+    //
+    // for (var x in person)  // x 为属性名
+    // {
+    //     txt=txt + person[x];
+    //     alert(txt);
+    // }
+    //
+    // var str="dddd";
+    //
+    // var person = undefined;     // 值为 undefined, 类型为 undefined
+    //
+    // var person1 = null;     // 值为 undefined, 类型为 undefined
+    //
+    // alert(typeof person);
+    //
+    // alert(typeof person1);
+    //
+    //
+    // alert(typeof str);
+    //
+    // alert(typeof NaN);
+    // alert(isNaN(NaN));
+</script>
+</body>
+</html>
