@@ -5,12 +5,17 @@
  * @param  foo bar
  * @return baz
  */
+
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+/**
+ * Class UserController
+ * 模拟在User控制其中定义注解路由
+ * @Route("/user/", name="userController")
+ */
 class BlogController
 {
     // This property is used by the marking store
