@@ -33,7 +33,8 @@ class Handler1
 {
     function handle($poster,$callback)
     {
-        $poster++;
+
+        $poster--;
         echo '处理器1' . "\n";
 
         return $callback($poster);
@@ -60,7 +61,7 @@ class Handler3
 {
     function handle($poster,$callback)
     {
-
+        $a=func_get_args();
         $poster--;
         echo '处理器3' . "\n";
 
@@ -97,7 +98,10 @@ class Handler5
 
     $pipes = [
         function ($poster, $callback) {
+            echo $poster."\r\n";
             $poster += 1;
+            echo $poster."\r\n";
+            var_dump($callback($poster));
             return $callback($poster);
         },
         function ($poster, $callback) {
@@ -113,20 +117,27 @@ class Handler5
     ];
 
 try{
-    $pipes1=[Handler1::class.":handle", new Handler2, new Handler3, new Handler4];
+    $pipes1=[Handler1::class.":handle",Handler2::class.":handle",Handler3::class.":handle",Handler4::class.":handle"];
+    //$pipes=[new Handler1(),new Handler2(),new Handler3(),new Handler4()];
 
 
-
-    echo (new Pipeline())->send(1)->through($pipes1)->then(function ($post) {
-        echo $post;
-        echo "-----------------------------------";
+  $res= (new Pipeline())->send(function($a){
+      return $a;
+  })->through($pipes1)->then(function ($post) {
+        return $post;
     }); // 执行输出为 2
+
+    var_dump($res(3));
 }catch (Throwable $e){
      //print_r($e);
 }
 
+$param=3;
+$func=function($a=1) use($param){
+    var_dump($a,$param);
+};
 
-
+$func();
 
 
 //return (new Pipeline($this->app)) # 传入 app 实例(单例)

@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+    <script type="module" src="b.js"></script>
 </head>
 <body>
 <form name="test" action="" method="post">
@@ -10,8 +13,46 @@
     <input type="submit" onclick="setMyText()">
 </form>
 
-<p id="demo"></p>
+<p id="demo" data-age="24" data-name="tayue"></p>
 <script>
+
+   //var bibao=(()=>console.log("hello world!"))();
+
+   console.log($('#demo').data("name")+"=>"+$('#demo').data("age"));
+   var objs=$('#demo')[0].dataset;
+
+console.log(objs);
+   for(let i in objs){
+       console.log(i);
+
+       console.log(objs[i]);
+       //console.log(i+"=>".objs[i]);
+   }
+
+
+   function arr() {
+       let a="hello";
+       let b="world";
+       return {a,b};
+   }
+
+    const {a,b}=arr();
+
+
+   console.log("ffffffffffff");
+
+
+var bibao=(c2,d2)=>{return {c2,d2}};
+
+   console.log(typeof bibao);
+console.log(bibao("hello1","world1!"));
+
+
+   const {c2,d2}=bibao("hello1","world1!");
+
+    console.log(a+"=>"+b);
+
+   console.log(c2+"=>"+d2);
 
     function sleep(ms) {
         return new Promise(function(resolve, reject) {

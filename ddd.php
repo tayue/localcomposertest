@@ -34,7 +34,7 @@ function diffBetweenTwoDays ($day1, $day2)
     }
     return ($second1 - $second2) / 86400;
 }
-$date1="2020-02-25 12:33:33";
-$date2=date("Y-m-d H:i:s");
-$diff = ceil(diffBetweenTwoDays($date1, $date2));
-echo $diff."\n";
+//$date1="2020-02-25 12:33:33";
+//$date2=date("Y-m-d H:i:s");
+//$diff = ceil(diffBetweenTwoDays($date1, $date2));
+//echo $diff."\n";

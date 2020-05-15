@@ -12,7 +12,8 @@ use App\Controller\UserController;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\FileCacheReader;
-
+use App\Annotation\AnnotatedDescription;
+use App\Controller\AnnotationDemo;
 
 
 
@@ -28,9 +29,20 @@ use Doctrine\Common\Annotations\FileCacheReader;
 
 // 注释使用自己的自动加载机制来确定给定的注释是否具有可以自动加载的对应PHP类
 // 配置注释自动加载(2.0版本中已剔除)
-AnnotationRegistry::registerLoader('class_exists'); //回调需返回true
+
+/** @noinspection PhpDeprecationInspection */
+AnnotationRegistry::registerLoader(function (string $class) {
+    echo $class."----------------------------\r\n";
+    if (class_exists($class)) {
+        return true;
+    }
+
+    return false;
+});
+
+//AnnotationRegistry::registerLoader('class_exists'); //回调需返回true
 //AnnotationRegistry::registerFile(__DIR__ . '/Util/Annotation/Route.php'); //注册文件
-AnnotationRegistry::registerAutoloadNamespace('App\Annotation'); //注册命名空间
+//AnnotationRegistry::registerAutoloadNamespace('App\Annotation'); //注册命名空间
 //AnnotationRegistry::registerAutoloadNamespaces(['Util\\Annotation' => null]); //注册多个命名空间
 
 // 系统默认 var、author 标记不会识别
@@ -45,7 +57,20 @@ foreach ($whitelist as $v) {
     AnnotationReader::addGlobalIgnoredName($v);
 }
 
-$reflectionClass = new \ReflectionClass(UserController::class);
+$reflectionClass = new \ReflectionClass(AnnotationDemo::class);
+
+
+// Annotation reader
+$reader    = new AnnotationReader();
+$className = $reflectionClass->getName();
+
+$oneClassAnnotation = [];
+$classAnnotations   = $reader->getClassAnnotations($reflectionClass);
+
+print_r($classAnnotations);
+die();
+
+
 $methods = $reflectionClass->getMethods();
 print_r($methods);
 

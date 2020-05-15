@@ -10,7 +10,7 @@ getMainDescription($res);
 
 echo "<hr>";
 
-function getBetweenString($start, $end, $str)
+function getBetweenString1($start, $end, $str)
 {
     $run = 1;
     $res = array();
@@ -27,6 +27,12 @@ function getBetweenString($start, $end, $str)
         $res = current($res);
     }
     return $res;
+}
+
+function getBetweenString($begin,$end,$str){
+    $b = mb_strpos($str,$begin) + mb_strlen($begin);
+    $e = mb_strpos($str,$end) - $b;
+    return mb_substr($str,$b,$e);
 }
 
 function funcGetDescIncludes($string)
@@ -72,5 +78,6 @@ function getMainDescription($str)
     $pl_note=trim($pdNoteStr,"\n");
     $data['pl_main_description']=$pl_main_description;
     $data['pl_note']=$pl_note;
+    print_r($data);
     return $data;
 }

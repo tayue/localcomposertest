@@ -2,7 +2,7 @@
 /**
  * A test class
  *
- * @param  foo bar
+ * @param foo bar
  * @return baz
  */
 
@@ -59,12 +59,14 @@ class BlogController
      * @param mixed $id
      */
     public function show($id)
-    {echo "show_______________";
+    {
+        echo "show_______________";
         echo "id:" . $id;
     }
 
-    public function article($id,$title)
-    {  echo "article_______________";
-      var_dump($id,$title);
+    public function article($id, $title)
+    {
+        echo "article_______________";
+        var_dump($id, $title);
     }
 }

@@ -1,14 +1,24 @@
 <?php
-$str='<p><b>Description:</b></p>
-<p>Handmade colorful round beads alloy leaves combined tassel earrings<br>Behomia style,hollow flower shaped metal hook earrings for women girl bride<br>Exquisite gorgeous beads jewelry make you confident and charm<br>material:plastic,alloy<br>Earring Size(LxW):Appro. 7.6cmx2.1cm/2.99x0.83inch</p>
-<p><b>Package Includes:</b></p>
-<p>1Pair Earrings<br></p>
-';
-$pattern='/Materia:(.*)\<br\>/i';
-$res=preg_match($pattern,$str,$match);
-if($res){
-    $productMaterial=$match[1];
-}
-var_dump($res);
 
- print_r($match);
+$data = array(
+    'haha'=>'haha`',
+    'dddd'=>'dddd1'
+  );
+
+$data = http_build_query($data);
+
+//$postdata = http_build_query($data);
+$options = array(
+    'http' => array(
+        'method' => 'POST',
+        'header' => 'Content-type:application/x-www-form-urlencoded',
+        'content' => $data
+        //'timeout' => 60 * 60 // 超时时间（单位:s）
+    )
+);
+
+$url = "http://192.168.99.88:9501/home/test/post";
+$context = stream_context_create($options);
+$result = file_get_contents($url, false, $context);
+
+echo $result;

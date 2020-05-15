@@ -37,6 +37,31 @@ $array = array(
         array('name' => 'girly', 'sex' => 'f', 'breed' => 'poodle')
     )
 );
-foreach (new RecursiveIteratorIterator(new RecursiveArrayIterator($array)) as $key => $value) {
-    echo $key . ' -- ' . $value . '<br />';
+
+//$recursiveIterator = new RecursiveArrayIterator($array);
+//
+//$recursiveIteratorIterator = new RecursiveIteratorIterator($recursiveIterator);
+//
+//foreach ($recursiveIteratorIterator as $key => $value) {
+//    echo "Depth: " . $recursiveIteratorIterator->getDepth() . PHP_EOL;
+//    echo "Key: " . $key . PHP_EOL;
+//    echo "Value: " .$value . PHP_EOL;
+//}
+
+try {
+    $object = new ArrayIterator($array);
+
+    /*** unset the kiwi ***/
+    foreach ($object as $key => $value) {
+        print_r($value);
+        /*** check the value of the key ***/
+        if ($object->offSetGet($key) === 'kiwi') {
+            /*** unset the current key ***/
+            $object->offSetUnset($key);
+        }
+        echo '<li>' . $key . ' - ' . $value . '</li>' . "\n";
+    }
+
+} catch (Exception $e) {
+    echo $e->getMessage();
 }

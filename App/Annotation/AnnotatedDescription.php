@@ -3,7 +3,6 @@
 namespace App\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
-use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation
@@ -28,8 +27,6 @@ class AnnotatedDescription
 
     public function __construct(array $data)
     {
-        print_r($data);
-
         foreach ($data as $key => $value) {
             $this->$key = $value;
         }

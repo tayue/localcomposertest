@@ -18,20 +18,15 @@ AnnotationRegister::getInstance([
 AnnotationRegister::getInstance()->load();
 $annotations = AnnotationRegister::getAnnotations();
 
+$aspectAnnotations=AnnotationRegister::getAspectAnnotations();
 
-$recursiveIterator = new ArrayIterator($annotations);
-
-
-//$recursiveIteratorIterator = new RecursiveIteratorIterator($recursiveIterator);
-
-foreach ($recursiveIterator as $key => $value) {
-    echo "Depth: " . $recursiveIteratorIterator->getDepth() . PHP_EOL;
-    echo "Key: " . $key . PHP_EOL;
-    echo "Value: " .$value . PHP_EOL;
-}
+print_r($annotations);
+print_r($aspectAnnotations);
+die("--");
 
 
-print_r($annotations); die("mm");
+
+print_r($annotations['App']); die("mm");
 
 
 function ceshi($params)

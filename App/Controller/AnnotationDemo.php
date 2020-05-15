@@ -3,17 +3,19 @@
 
 namespace App\Controller;
 use App\Annotation\AnnotatedDescription;
-
+use App\Annotation\BeforeAspect;
+use App\Annotation\AfterAspect;
+use App\Annotation\Bean;
+use App\Service\UserService;
 /**
  * @AnnotatedDescription("这是一个用于展示Annotation类的例子。")
  */
 class AnnotationDemo
 {
     /**
-     * @AnnotatedDescription(desc="这个属性必须要为String",type="String", value="哈哈")
-     * @var String
+     * @Bean(name="userService")
      */
-    private $property = "I am a private property!";
+    private $property;
 
     /**
      * @AnnotatedDescription(value="啦啦")
@@ -21,11 +23,30 @@ class AnnotationDemo
      */
     protected $extra;
 
-    /**
-     * @AnnotatedDescription(desc="getProperty", type="getter")
-     */
+    public function setProperty($obj){
+        $this->property=$obj;
+    }
+
+
     public function getProperty()
     {
         return $this->property;
+    }
+
+    /**
+     * @BeforeAspect()
+     * @AnnotatedDescription(desc="test", type="getter")
+     */
+    public function test(){
+        __CLASS__."=>".__METHOD__."\r\n";
+    }
+
+    /**
+     * @BeforeAspect()
+     * @AfterAspect()
+     */
+    public function getAop()
+    {
+        return "getAop";
     }
 }
