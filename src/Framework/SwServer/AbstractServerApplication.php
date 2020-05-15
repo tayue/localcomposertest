@@ -11,12 +11,15 @@ namespace Framework\SwServer;
 use Framework\Di\ServerContainer;
 use Framework\Core\error\CustomerError;
 use Framework\Core\log\Log;
+use Framework\SwServer\Aop\AopProxyFactory;
+use Framework\SwServer\Aop\ProxyFactory;
 use Framework\SwServer\Coroutine\CoroutineManager;
 use Framework\Core\Db;
 use Framework\SwServer\Base\BaseObject;
 use Framework\SwServer\Pool\DiPool;
 use Framework\Traits\ServerTrait;
 use Framework\SwServer\Protocol\TcpServer;
+use Framework\SwServer\Annotation\AnnotationRegister;
 
 abstract class AbstractServerApplication extends BaseObject
 {
@@ -36,7 +39,8 @@ abstract class AbstractServerApplication extends BaseObject
         $this->setTimeZone(ServerManager::$config['timeZone']);
         (isset(ServerManager::$config['log']) && ServerManager::$config['log']) && Log::getInstance()->setConfig(ServerManager::$config['log']);
         Db::setConfig(ServerManager::$config['components']['db']['config']);
-        DiPool::getInstance();
+        $this->annotationRegister();
+        DiPool::getInstance()->initAspectAopAnnotationClass();
     }
 
     public function init()
@@ -45,6 +49,21 @@ abstract class AbstractServerApplication extends BaseObject
         ServerManager::getInstance()->coroutine_id = $this->coroutine_id;
         $this->setApp();
     }
+
+    public function annotationRegister()
+    {
+        $onlyScanNamespaces = (isset(ServerManager::$config['onlyScanNamespaces']) && ServerManager::$config['onlyScanNamespaces']) ? ServerManager::$config['onlyScanNamespaces'] : ['App\\'];
+        AnnotationRegister::getInstance([
+            'onlyScanNamespaces' => $onlyScanNamespaces,
+            'handlerCallback' => function ($type, ...$params) {
+                if (method_exists(AnnotationRegister::class, $type)) {
+                    call_user_func_array([AnnotationRegister::class, $type], $params);
+                }
+            }
+        ])->load();
+    }
+
+
 
     public function setTimeZone($value)
     {
@@ -91,9 +110,9 @@ abstract class AbstractServerApplication extends BaseObject
         }
     }
 
-    public function parseUrl(\swoole_http_request $request, \swoole_http_response $response,$isGrpcServer=false)
+    public function parseUrl(\swoole_http_request $request, \swoole_http_response $response, $isGrpcServer = false)
     {
-        Route::parseSwooleRouteUrl($request, $response,$isGrpcServer);
+        Route::parseSwooleRouteUrl($request, $response, $isGrpcServer);
     }
 
     /**

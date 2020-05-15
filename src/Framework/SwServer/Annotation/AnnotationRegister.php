@@ -3,12 +3,17 @@
 
 namespace Framework\SwServer\Annotation;
 
+use App\Aop\ProxyFactoryDemo;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Framework\SwServer\Annotation\ComposerHelper;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Framework\SwServer\Annotation\Contract\AnnotationLoaderInterface;
 use Framework\Traits\SingletonTrait;
 use Composer\Autoload\ClassLoader;
+use Framework\SwServer\Aop\Contract\AroundInterface;
+use Framework\SwServer\Pool\DiPool;
+use Framework\SwServer\Annotation\Contract\AnnotationBeanInterface;
+use mysql_xdevapi\Exception;
 use ReflectionClass;
 use function get_included_files;
 use DirectoryIterator;
@@ -29,7 +34,6 @@ use function substr;
 class AnnotationRegister
 {
     use SingletonTrait;
-
     private $loaderClass = 'AnnotationLoader';
     private $includedFiles = [];
     private $loaderClassSuffix = 'php';
@@ -72,6 +76,10 @@ class AnnotationRegister
      * ]
      */
     private static $annotations = [];
+
+    private static $aspectAnnotations = [];
+
+    private static $classPropertyAnnotations = [];
 
     /**
      * Annotation scan stats
@@ -212,7 +220,7 @@ class AnnotationRegister
             }
 
             foreach ($paths as $path) {
-               $loaderFile = sprintf('%s/%s.%s', $path, $this->loaderClass, 'php');
+                $loaderFile = sprintf('%s/%s.%s', $path, $this->loaderClass, 'php');
                 if (!file_exists($loaderFile)) {
                     $this->triggerHandlerCallback("NotLoaderClassFile", $loaderFile);
                     continue;
@@ -271,6 +279,9 @@ class AnnotationRegister
             $suffix = sprintf('.%s', $this->loaderClassSuffix);
             $pathName = str_replace([$nameSpaceDirPath, '/', $suffix], ['', '\\', ''], $filePath);
             $className = sprintf('%s%s', $nameSpace, $pathName);
+            if (!class_exists($className)) {
+                continue;
+            }
             $this->parseAnnotation($nameSpace, $className);
 
         }
@@ -309,6 +320,7 @@ class AnnotationRegister
         $parseClassAnnotations = $reader->getClassAnnotations($reflectionClass);
         // Class annotation
         if (!empty($parseClassAnnotations)) {
+            self::checkGetAspectClassAnnotation($className, $parseClassAnnotations);
             $classAnnotations['annotation'] = $parseClassAnnotations;
             $classAnnotations['reflection'] = $reflectionClass;
         }
@@ -318,6 +330,7 @@ class AnnotationRegister
             $propertyName = $reflectionProperty->getName();
             $propertyAnnotations = $reader->getPropertyAnnotations($reflectionProperty);
             if (!empty($propertyAnnotations)) {
+                self::checkSetClassPropertyAnnotation($className, $propertyName, $propertyAnnotations);
                 $classAnnotations['properties'][$propertyName]['annotation'] = $propertyAnnotations;
                 $classAnnotations['properties'][$propertyName]['reflection'] = $reflectionProperty;
             }
@@ -329,6 +342,7 @@ class AnnotationRegister
             $methodName = $reflectionMethod->getName();
             $methodAnnotations = $reader->getMethodAnnotations($reflectionMethod);
             if (!empty($methodAnnotations)) {
+                self::checkGetAspectMethodAnnotation($className, $methodName, $methodAnnotations);
                 $classAnnotations['methods'][$methodName]['annotation'] = $methodAnnotations;
                 $classAnnotations['methods'][$methodName]['reflection'] = $reflectionMethod;
             }
@@ -343,12 +357,146 @@ class AnnotationRegister
         return $classAnnotations;
     }
 
+    public static function setClassPropertyAnnotation($className, $propertyName, $propertyObj)
+    {
+
+        $propertyAnnotationKey = $className . "->" . $propertyName;
+        self::$classPropertyAnnotations[$propertyAnnotationKey] = $propertyObj;
+        echo "@@@@@@@@@@@@@@@@@@@@@@@@ setClassPropertyAnnotation {$propertyAnnotationKey} @@@@@@@@@@@@@@@@@@@@@@@@\r\n";
+    }
+
+    public static function getClassPropertyAnnotations()
+    {
+        return self::$classPropertyAnnotations;
+    }
+
+    public function getClassPropertyObj($className, $propertyName)
+    {
+        $propertyAnnotationKey = $className . "->" . $propertyName;
+        if (isset(self::$classPropertyAnnotations[$propertyAnnotationKey]) && self::$classPropertyAnnotations[$propertyAnnotationKey]) {
+            return self::$classPropertyAnnotations[$propertyAnnotationKey];
+        }
+    }
+
+    public static function checkSetClassPropertyAnnotation($className, $propertyName, $propertyAnnotations)
+    {
+        $setPropertyMethodName = "set" . ucfirst($propertyName);
+        $classObj = DiPool::getInstance()->getSingleton($className);
+        if ($propertyAnnotations) {
+            foreach ($propertyAnnotations as $propertyAnnotation) {
+                if ($propertyAnnotation instanceof AnnotationBeanInterface) {
+                    $propertyObj = $propertyAnnotation->get();
+                    if (!$propertyObj) {
+                        throw new \Exception("{$className}->{$propertyName}:property annotation error !");
+                    }
+                    if (method_exists($classObj, $setPropertyMethodName)) {
+                        $classObj->$setPropertyMethodName($propertyObj);
+                    } else {
+                        $classObj->$propertyName = $propertyObj;
+                    }
+
+                }
+            }
+        }
+        DiPool::getInstance()->registerSingletonByObject($className, $classObj); //强制
+    }
+
+    public static function checkGetAspectClassAnnotation($className, $annotations)
+    {
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof AroundInterface) {
+                self::setAspectClassAnnotation($className, $annotation);
+            }
+        }
+    }
+
+    public static function checkGetAspectMethodAnnotation($className, $methodName, $methodAnnotations)
+    {
+        foreach ($methodAnnotations as $methodAnnotation) {
+            if ($methodAnnotation instanceof AroundInterface) {
+                self::setAspectClassMethodAnnotation($className, $methodName, $methodAnnotation);
+            }
+        }
+    }
+
+    public static function setAspectClassAnnotation($className, AroundInterface $aspectAnnotationObj)
+    {
+        echo "########################## setAspectClassAnnotation {$className} ##########################\r\n";
+        self::$aspectAnnotations[$className][] = $aspectAnnotationObj;
+
+    }
+
+    public static function setAspectClassMethodAnnotation($className, $methodName, AroundInterface $aspectMethodAnnotationObj)
+    {
+        $aspectMethodKey = $className . "::" . $methodName;
+        if (!isset(self::$aspectAnnotations[$aspectMethodKey]) || !in_array($aspectMethodAnnotationObj, self::$aspectAnnotations[$aspectMethodKey])) {
+            echo "--------------- setAspectClassMethodAnnotation {$aspectMethodKey} -------------------\r\n";
+            self::$aspectAnnotations[$aspectMethodKey][] = $aspectMethodAnnotationObj;
+        }
+    }
+
+
     /**
      * @return array
      */
     public static function getAnnotations(): array
     {
         return self::$annotations;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAspectAnnotations(): array
+    {
+        return self::$aspectAnnotations;
+    }
+
+    public static function checkIsHasAspectAnnotation($className, $methodName = ''): bool
+    {
+        $isHasAspectAnnotation = false;
+        $aspectMethodKey = '';
+        $methodName && $aspectMethodKey = $className . "::" . $methodName;
+        if (isset(self::$aspectAnnotations[$className]) && self::$aspectAnnotations[$className]) {
+            $isHasAspectAnnotation = true;
+        } elseif ($aspectMethodKey && (isset(self::$aspectAnnotations[$aspectMethodKey]) && self::$aspectAnnotations[$aspectMethodKey])) {
+            $isHasAspectAnnotation = true;
+        }
+        return $isHasAspectAnnotation;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAspectMethodAnnotationObjs($className, $methodName): array
+    {
+        $return = [];
+        $aspectMethodKey = $className . "::" . $methodName;
+        if (isset(self::$aspectAnnotations[$aspectMethodKey]) && self::$aspectAnnotations[$aspectMethodKey]) {
+            return self::$aspectAnnotations[$aspectMethodKey];
+        }
+        return $return;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAspectClassAnnotationObjs($className): array
+    {
+        $return = [];
+        if (isset(self::$aspectAnnotations[$className]) && self::$aspectAnnotations[$className]) {
+            return self::$aspectAnnotations[$className];
+        }
+        return $return;
+    }
+
+    public static function getAspectObjs($className, $methodName)
+    {
+        $aspectObjs = self::getAspectMethodAnnotationObjs($className, $methodName);
+        if ($aspectObjs) {
+            return $aspectObjs;
+        }
+        return self::getAspectClassAnnotationObjs($className);
     }
 
 
@@ -422,7 +570,18 @@ class AnnotationRegister
     public static function Debug($config)
     {
         echo "---------------------Debug-------------------------\r\n";
-        print_r($config);
+        //print_r($config);
         echo "---------------------Debug-------------------------\r\n";
     }
+
+    public function parseAnnotationForClass(string $className)
+    {
+        $reflectionClass = new ReflectionClass($className);
+        // skip abstract
+        if ($reflectionClass->isAbstract()) {
+            return;
+        }
+        $this->parseClassAnnotation($reflectionClass);
+    }
+
 }

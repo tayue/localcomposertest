@@ -258,14 +258,32 @@ trait ContainerTrait
         return $ps;
     }
 
-    public function getSingleton($className,$params=[])
+    public function getSingleton($className, $params = [])
     {
         if (isset($this->_singletons[$className])) {
             return $this->_singletons[$className];
         } else {
-            return $this->registerObject($className, ['class'=>$className],$params);
+            if (!class_exists($className)) {
+                return false;
+            }
+            return $this->registerObject($className, ['class' => $className], $params);
         }
         return false;
+    }
+
+    public function isSetSingleton($className){
+        $flag=false;
+        if (isset($this->_singletons[$className])) {
+            $flag=true;
+        }
+        return $flag;
+    }
+
+    public function setSingletonByObject($class, $object)
+    {
+        if (isset($this->_singletons[$class])) unset($this->_singletons[$class]);
+        class_exists($class) && $object && $this->_singletons[$class] = $object;
+        return $object;
     }
 
 

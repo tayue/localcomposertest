@@ -4,6 +4,8 @@ namespace Framework\Tool;
 
 use Closure;
 
+use function class_exists;
+
 /**
  * This file mostly code come from illuminate/pipe,
  * thanks Laravel Team provide such a useful class.
@@ -101,8 +103,11 @@ class Pipeline
      */
     protected function carry(): Closure
     {
-        return function ($stack, $pipe) { var_dump($stack,$pipe);
+        return function ($stack, $pipe) {
             return function ($passable) use ($stack, $pipe) {
+                if (!$passable) { //验证当前流通的参数值
+                    return false;
+                }
                 if (is_callable($pipe)) {
                     // If the pipe is an instance of a Closure, we will just call it directly but
                     // otherwise we'll resolve the pipes out of the container and call it with
@@ -111,12 +116,12 @@ class Pipeline
                 }
                 if (!is_object($pipe)) {
                     [$name, $parameters] = $this->parsePipeString($pipe);
-
                     // If the pipe is a string we will parse the string and resolve the class out
                     // of the dependency injection container. We can then build a callable and
                     // execute the pipe function giving in the parameters that are required.
-                    $pipe = $this->container->get($name);
-
+                    if (class_exists($name)) {
+                        $pipe = new $name();
+                    }
                     $parameters = array_merge([$passable, $stack], $parameters);
                 } else {
                     // If the pipe is already an object we'll just make a callable and pass it to
@@ -143,7 +148,6 @@ class Pipeline
         if (is_string($parameters)) {
             $parameters = explode(',', $parameters);
         }
-
         return [$name, $parameters];
     }
 }
