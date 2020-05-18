@@ -48,7 +48,7 @@ class OrderDao
     {
         $this->orderService->create($orderData);
         $this->orderService->create($orderData);
-        //$this->orderService->create($orderData);
+        $this->orderService->create($orderData);
         $this->userService->notify($orderData);
     }
 
@@ -60,8 +60,9 @@ class OrderDao
     public function createUser($orderData)
     {
         $this->orderService->create($orderData);
-        //$this->orderService->create($orderData);
         $this->orderService->create($orderData);
+        $this->orderService->create($orderData);
+        $this->userService->notify($orderData);
         $this->userService->notify($orderData);
 
     }
