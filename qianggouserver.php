@@ -23,7 +23,7 @@ if($redis->get("token")!=$_POST['token']){
 }
 
 $redis->watch("mywatchkey");//命令用于监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断
-$mywatchkey=$redis->get("mywatchkey"); //可以理解为当前抢购的商品数量
+$mywatchkey=$redis->get("mywatchkey"); //(mywatchkey 待抢购的商品id编号key)可以理解为当前抢购的商品数量
 $limit=10; //本次秒杀活动该商品的实际库存数量
 if($mywatchkey>=$limit){
     exit("活动结束");
@@ -36,7 +36,7 @@ $rob_result = $redis->exec();//按命令执行的先后顺序排列。 当操作
 if($rob_result){
 //保证库存，原子判断，确保当两个客户同时访问 Redis 服务器得到的是更新后的值
     if($redis->incr("stock")>$limit){
-        echo "抢购失败,请重试";
+        echo "抢购失败,请重试";exit;
     }
     echo "抢购成功";
 //抢购成功
