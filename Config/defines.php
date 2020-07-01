@@ -1,9 +1,9 @@
 <?php
 define('APP_NAME','App');
-define('APP_PATH',dirname(__DIR__));
+define('APP_PATH',dirname(__DIR__)."/App");
 define('ROOT_PATH',dirname(APP_PATH));
 define('DATA_PATH',ROOT_PATH.'/Data');
-define('CONFIG_PATH',APP_PATH.'/Config');
+define('CONFIG_PATH',ROOT_PATH.'/Config');
 define('VENDOR_PATH',ROOT_PATH.'/vendor');
 
 // 定义服务协议常量
@@ -18,6 +18,8 @@ defined('SWOOLE_PACK_CHECK_EOF') or define('SWOOLE_PACK_CHECK_EOF', 'eof');
 
 // 日志目录
 define('LOG_PATH',APP_PATH.'/Log');
+
+define('TEXT_MAP','text_map');
 
 // 定义smarty
 define('SMARTY_TEMPLATE_PATH',APP_PATH.'/View/');

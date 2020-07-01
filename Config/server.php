@@ -16,7 +16,7 @@ return [
         'setting' => [
             'reactor_num' => 1,
             'worker_num' => 4,
-            'max_request' => 10000,
+            'max_request' => 100000,
             'task_worker_num' => 4,
             'task_tmpdir' => '/dev/shm',
             'daemonize' => 0,
@@ -104,8 +104,8 @@ return [
         'timeout' => 0.5,       //数据库连接超时时间
         'charset' => 'utf8', //默认字符集
         'strict_type' => true,  //ture，会自动表数字转为int类型
-        'space_time' => 10 * 3600,
-        'mix_pool_size' => 300,     //最小连接池大小
+        'space_time' => 120,
+        'mix_pool_size' => 50,     //最小连接池大小
         'max_pool_size' => 1000,    //最大连接池大小
         'pool_get_timeout' => 4, //当在此时间内未获得到一个连接，会立即返回。（表示所以的连接都已在使用中）
     ],
@@ -130,9 +130,20 @@ return [
         'database' => 0,
         'timeout' => 0.5,       //数据库连接超时时间
         'space_time' => 10 * 3600,
-        'mix_pool_size' => 4,     //最小连接池大小
-        'max_pool_size' => 10,    //最大连接池大小
-        'pool_get_timeout' => 4, //当在此时间内未获得到一个连接，会立即返回。（表示所以的连接都已在使用中）
+        'mix_pool_size' => 50,     //最小连接池大小
+        'max_pool_size' => 1200,    //最大连接池大小
+        'pool_get_timeout' => 1, //当在此时间内未获得到一个连接，会立即返回。（表示所以的连接都已在使用中）
+    ],
+    'rabbit_pool' => [
+        'host' => '192.168.99.88',   //ip
+        'port' => 5672,          //端口
+        'user' => 'admin',        //用户名
+        'password' => 'admin', //密码
+        'vhost' => 'my_vhost',   //默认主机
+        'space_time' => 10 * 3600,       //100s间隔
+        'mix_pool_size' => 100,     //最小连接池大小
+        'max_pool_size' => 1200,    //最大连接池大小
+        'pool_get_timeout' => 1, //当在此时间内未获得到一个连接，会立即返回。（表示所以的连接都已在使用中）
     ],
     'inotify' => [
         'afterNSeconds' => 3,
