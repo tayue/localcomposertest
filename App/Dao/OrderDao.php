@@ -6,7 +6,6 @@ namespace App\Dao;
 use App\Annotation\Bean;
 use App\Service\UserService as userService;
 use App\Service\OrderService as orderService;
-
 use App\Annotation\BeforeAspect;
 use App\Annotation\AfterAspect;
 

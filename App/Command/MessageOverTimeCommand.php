@@ -48,14 +48,7 @@ class MessageOverTimeCommand extends Command
         MessageService::MessageConsumeOverTimeHandle();
         $output->writeln('creating MessageConsumeOverTimeHandle...');
 
-//        new ConsumeProcess($input->getArgument('process_name'), $input->getArgument('child_process_name'), $input->getArgument('num'), function ($processName) {
-//            $exchange = 'test_exchange_confirm';
-//            $queue = 'test_queue_confirm';
-//            $route_key = 'test_confirm';
-//            $consumer_tag = 'consumer_tag';
-//            $callback = [new RabbitMqService(), 'consumeCallback'];
-//            RabbitMqService::consumeMessage($exchange, $queue, $route_key, $consumer_tag, $callback, true, $processName);
-//        });
+
         $output->writeln('created Procee :' . $input->getArgument('process_name') .  ' success !');
 
 

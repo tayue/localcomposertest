@@ -4,6 +4,7 @@
 namespace App\Service;
 
 use App\Listener\MessageConsumeOverTimeListener;
+use App\Listener\ConfirmMessageConsumeListener;
 use Framework\SwServer\Event\EventManager;
 use Framework\SwServer\Pool\RabbitPoolManager;
 use Framework\SwServer\Pool\RedisPoolManager;
@@ -30,7 +31,6 @@ class MessageService
     public function __construct()
     {
         $this->orderService = new OrderService();
-
     }
 
     public static function MessageConsumeOverTimeHandle()
@@ -38,8 +38,17 @@ class MessageService
         echo "Trigger MessageConsumeOverTimeHandle\r\n";
         $eventManager = new EventManager(); //全局的事件管理器
         $messageConsumeOverTimeListener = new MessageConsumeOverTimeListener();
-        $eventManager->addListener($messageConsumeOverTimeListener, ["order" => 1]);
-        $eventManager->trigger("order", null, []);
+        $eventManager->addListener($messageConsumeOverTimeListener, ["MessageConsumeOverTimeHandle" => 1]);
+        $eventManager->trigger("MessageConsumeOverTimeHandle", null, []);
+    }
+
+    public static function ConfirmMessageConsumeListener()
+    {
+        echo "Trigger ConfirmMessageConsumeListener\r\n";
+        $eventManager = new EventManager(); //全局的事件管理器
+        $ConfirmMessageConsumeListener = new ConfirmMessageConsumeListener();
+        $eventManager->addListener($ConfirmMessageConsumeListener, ["ConfirmMessageConsumeListener" => 1]);
+        $eventManager->trigger("ConfirmMessageConsumeListener", null, []);
     }
 
     public function getRedis()
@@ -127,8 +136,6 @@ class MessageService
 
     public function ConsumeMessage($processIndex)
     {
-
-
         echo $processIndex . "\r\n";
         $OverTimeMsgQueueName = 'MessageConsumeOverTimeListener:msgQueue';
         $this->getRedis();
@@ -136,8 +143,8 @@ class MessageService
             $msgId = $this->connectionRedis->lpop($OverTimeMsgQueueName);
             //var_dump($msgId);
             if ($msgId) {
-                usleep(2500000);
-                echo "Customer Process {$processIndex} Handle Message {$msgId}\r\n";
+                sleep(0.5);
+                echo "[".date("Y-m-d H:i:s")."] "."Customer Process {$processIndex} Handle Message {$msgId}\r\n";
                 $this->ConsumeOneOverMessage($msgId);
             } else {
                 sleep(5);
@@ -145,6 +152,55 @@ class MessageService
 
         }
         //$this->putRedis();
+    }
+
+    public function consumeMessages($exchange, $queue, $routeKey, $callBack, bool $confirm = true, $consumer_tag = '')
+    {
+        $result = false;
+        if (!$exchange || !$routeKey || !$queue) {
+            return $result;
+        }
+        $this->getRabbit();
+        $connection = $this->connectionRabbit;
+        if ($confirm) {
+            $channel = $connection->channel();
+            $channel->confirm_select(); //confrim
+        } else {
+            $channel = $connection->channel();
+        }
+
+        // 3、声明一个交换器，并且设置相关属性
+        $channel->exchange_declare($exchange, AMQPExchangeType::DIRECT, false, true, false);
+
+        // 4、声明一个队列, 并且设置相关属性
+        $channel->queue_declare($queue, false, true, false, false);
+
+        // 5、通过路由键将交换器和队列绑定起来
+        $channel->queue_bind($queue, $exchange, $routeKey);
+
+        $channel->basic_consume(
+            $queue,
+            $consumer_tag,
+            false,
+            false,
+            false,
+            false,
+            function (AMQPMessage $message) use ($callBack) {
+                call_user_func($callBack, $message);
+            }
+        );
+        // 8、一直阻塞消费数据
+        while ($channel->is_consuming()) {
+            $channel->wait();
+        }
+
+        function shutdown($channel, $connection)
+        {
+            $channel->close();
+            $connection->close();
+        }
+
+        register_shutdown_function('shutdown', $channel, $connection);
     }
 
 
