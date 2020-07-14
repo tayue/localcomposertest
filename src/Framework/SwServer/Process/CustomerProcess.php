@@ -1,15 +1,12 @@
 <?php
+/**
+ * 用户自定义进程
+ */
 
+namespace Framework\SwServer\Process;
 
-namespace App\Process;
-
-use App\Service\CommonService;
-use Framework\SwServer\Pool\MysqlPoolManager;
-use Framework\SwServer\Pool\RabbitPoolManager;
-use Framework\SwServer\Pool\RedisPoolManager;
 use Framework\Tool\Tool;
-
-class ConsumeProcess
+class CustomerProcess
 {
     public $mpid = 0;
     public $works = [];
@@ -18,6 +15,7 @@ class ConsumeProcess
     private $processName;
     private $childProcessNamePre;
     private $config;
+    private $callback;
 
     public function __construct($processName, $childProcessNamePre, $processNums = 0, $callback = null, $config = [])
     {
@@ -26,7 +24,8 @@ class ConsumeProcess
             $processNums && $this->max_precess = $processNums;
             $this->processName = $processName;
             $this->childProcessNamePre = $childProcessNamePre;
-            swoole_set_process_name(sprintf('php-ps:%s', $this->processName));
+            $this->callback=$callback;
+            swoole_set_process_name(sprintf('SwooleCustomerProcess:%s', $this->processName));
             $this->mpid = posix_getpid();
             $this->run($callback);
             $this->processWait();
@@ -51,9 +50,8 @@ class ConsumeProcess
             }
             swoole_set_process_name(sprintf('php-ps:%s', $this->childProcessNamePre . $index));
             $this->checkMpid($worker);
-            CommonService::setConfig($this->config);
-            Tool::call($callback, [$index]);
-        }, false, false);
+            Tool::call($callback, [$index,$this->config]);
+        }, false, false,true);
         $pid = $process->start();
         $this->works[$index] = $pid;
         return $pid;
@@ -74,7 +72,7 @@ class ConsumeProcess
         $index = array_search($pid, $this->works);
         if ($index !== false) {
             $index = intval($index);
-            $new_pid = $this->CreateProcess($index);
+            $new_pid = $this->CreateProcess($index,$this->callback);
             echo "rebootProcess: {$index}={$new_pid} Done\n";
             return;
         }
