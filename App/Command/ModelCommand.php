@@ -15,7 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use App\Process\ConsumeProcess;
+use Framework\SwServer\Process\CustomerProcess;
 
 class ModelCommand extends Command
 {
@@ -42,8 +42,6 @@ class ModelCommand extends Command
         $config = include_once realpath('./') . '/Config/config.php';
         $serverConfig = include_once realpath('./') . '/Config/server.php';
         $config = array_merge($config, $serverConfig);
-        var_dump($config);
-
         $output->writeln(json_encode($config['redis_pool']));
         // 你想要做的任何操作
         //$optional_argument = $input->getArgument('optional_argument');
@@ -51,7 +49,7 @@ class ModelCommand extends Command
         $output->writeln('creating ConsumeProcess...');
         //MessageService::MessageConsumeOverTimeHandle();
         $processName = 'MessageConsumeOverTimeListener';
-        new ConsumeProcess($input->getArgument('process_name'), $input->getArgument('child_process_name'), $input->getArgument('num'), [new MessageService(), 'ConsumeMessage'],$config);
+        new CustomerProcess($input->getArgument('process_name'), $input->getArgument('child_process_name'), $input->getArgument('num'), [new MessageService(), 'ConsumeMessage'],$config);
 
 //        new ConsumeProcess($input->getArgument('process_name'), $input->getArgument('child_process_name'), $input->getArgument('num'), function ($processName) {
 //            $exchange = 'test_exchange_confirm';

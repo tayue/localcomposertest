@@ -8,9 +8,7 @@ use App\Listener\ConfirmMessageConsumeListener;
 use Framework\SwServer\Event\EventManager;
 use Framework\SwServer\Pool\RabbitPoolManager;
 use Framework\SwServer\Pool\RedisPoolManager;
-use Framework\SwServer\ServerManager;
-use mysql_xdevapi\Exception;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
+
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Swoole\Coroutine as SwCoroutine;
@@ -18,7 +16,7 @@ use Framework\SwServer\Coroutine\CoroutineManager;
 
 /**
  * 消息子系统服务
- * @package App\Service
+ *
  */
 class MessageService
 {
@@ -42,9 +40,11 @@ class MessageService
         $eventManager->trigger("MessageConsumeOverTimeHandle", null, []);
     }
 
-    public static function ConfirmMessageConsumeListener()
+    public static function ConfirmMessageConsumeListener($processIndex)
     {
-        echo "Trigger ConfirmMessageConsumeListener\r\n";
+        echo "Trigger ConfirmMessageConsumeListener:{$processIndex}\r\n";
+        CommonService::setRedis();
+        CommonService::setRabbit();
         $eventManager = new EventManager(); //全局的事件管理器
         $ConfirmMessageConsumeListener = new ConfirmMessageConsumeListener();
         $eventManager->addListener($ConfirmMessageConsumeListener, ["ConfirmMessageConsumeListener" => 1]);
@@ -134,24 +134,30 @@ class MessageService
         }
     }
 
-    public function ConsumeMessage($processIndex)
+    public function ConsumeMessage($processIndex, $config = [])
     {
-        echo $processIndex . "\r\n";
+
+        echo CoroutineManager::getInstance()->getCoroutineId() . "@@@\r\n";
+        CommonService::setConfig($config);
+        CommonService::setRedis();
+        CommonService::setRabbit();
+        echo $processIndex . "@@@@@@@@@@@@@@\r\n";
         $OverTimeMsgQueueName = 'MessageConsumeOverTimeListener:msgQueue';
-        $this->getRedis();
         while (true) {
+            $this->getRedis();
+            echo CoroutineManager::getInstance()->getCoroutineId() . "##@@@\r\n";
             $msgId = $this->connectionRedis->lpop($OverTimeMsgQueueName);
-            //var_dump($msgId);
+            echo $msgId . "\r\n";
             if ($msgId) {
-                sleep(0.5);
-                echo "[".date("Y-m-d H:i:s")."] "."Customer Process {$processIndex} Handle Message {$msgId}\r\n";
+                SwCoroutine::sleep(1); //处理业务时间
+                echo "[" . date("Y-m-d H:i:s") . "] " . "Customer Process {$processIndex} Handle Message {$msgId}\r\n";
                 $this->ConsumeOneOverMessage($msgId);
             } else {
-                sleep(5);
+                SwCoroutine::sleep(5);
             }
 
         }
-        //$this->putRedis();
+
     }
 
     public function consumeMessages($exchange, $queue, $routeKey, $callBack, bool $confirm = true, $consumer_tag = '')
@@ -204,7 +210,7 @@ class MessageService
     }
 
 
-    public function produceMessage($messages, $exchange, $queue, $routeKey, bool $confirm = false, int $timeout = 5)
+    public function produceMessage($messages, $exchange, $queue, $routeKey, bool $confirm = true, int $timeout = 5)
     {
         try {
             $result = false;
@@ -222,7 +228,6 @@ class MessageService
             } else {
                 $channel = $connection->channel();
             }
-
             $channel->set_ack_handler(function () use (&$result) {
                 $result = true;
             });
@@ -239,8 +244,7 @@ class MessageService
                 ]);
                 $channel->basic_publish($message, $exchange, $routeKey);
             }
-
-            //$channel->wait_for_pending_acks_returns($timeout);
+            $channel->wait_for_pending_acks_returns($timeout);
 
         } catch (\Throwable $exception) {
             throw $exception;

@@ -36,10 +36,11 @@ class ConfirmMessageConsumeListener implements EventHandlerInterface
     }
 
     /**
-     * @param \Framework\SwServer\Event\EventInterface $event
+     * @param 多进程处理尽可能快速的消费消息防止消息因没有及时消费被重复投递进入死队列中
      */
     public function handle(EventInterface $event)
     {
+        echo CoroutineManager::getInstance()->getCoroutineId() . "###\r\n";
         $this->getRedis();
         //查询消费确认超时的消息（消息恢复子系统）
         $exchangeName = 'tradeExchange';
@@ -59,8 +60,9 @@ class ConfirmMessageConsumeListener implements EventHandlerInterface
                 //执行任务当中,并且设置释放的时间
                 $res = $this->connectionRedis->setex("integrating_message_job:" . $data['msg_id'], 15, 1); //分布式互斥锁
                 if ($res) {
-                    sleep(0.5);//任务正在执行当中
+                    //SwCoroutine::sleep(0.5);//任务正在执行当中
                     //2.操作mysql更新积分(业务逻辑执行完毕)
+                    echo "[".date("Y-m-d H:i:s")."] ".$data['msg_id'] . "######" . $data['status'] . "\r\n";
                     $this->connectionRedis->set("integrating_message_job:" . $data['msg_id'], 2);//执行任务完毕
                     $this->messageService->ackMsg($data['msg_id']); //这个任务已经消费成功了
                     //回应ack

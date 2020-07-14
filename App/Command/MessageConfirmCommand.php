@@ -15,7 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use App\Process\ConsumeProcess;
+use Framework\SwServer\Process\CustomerProcess;
 
 class MessageConfirmCommand extends Command
 {
@@ -29,8 +29,8 @@ class MessageConfirmCommand extends Command
             // 运行命令时使用 "--help" 选项时的完整命令描述
             ->setHelp('This command allow you to create Process...')
             // 配置一个参数
-
-            ->addArgument('process_name', InputArgument::REQUIRED, 'what\'s process name you want to create ?');
+            ->addArgument('process_name', InputArgument::REQUIRED, 'what\'s process name you want to create ?')
+            ->addArgument('num', InputArgument::REQUIRED, 'what\'s numbers you want to create ?');
 
 
     }
@@ -41,13 +41,16 @@ class MessageConfirmCommand extends Command
         $config = include_once realpath('./') . '/Config/config.php';
         $serverConfig = include_once realpath('./') . '/Config/server.php';
         $config = array_merge($config, $serverConfig);
-        CommonService::setConfig($config);
+        new CustomerProcess($input->getArgument('process_name'), "ConfirmMessageConsumeListenerChild", $input->getArgument('num'), function($processIndex,$config){
+            CommonService::setConfig($config);
+            MessageService::ConfirmMessageConsumeListener($processIndex);
+        },$config);
 
         // 你想要做的任何操作
         //$optional_argument = $input->getArgument('optional_argument');
-        MessageService::ConfirmMessageConsumeListener();
+
         $output->writeln('creating ConfirmMessageConsumeListener...');
-        $output->writeln('created Procee :' . $input->getArgument('process_name') .  ' success !');
+        $output->writeln('created ConfirmMessageConsumeListener Procee :' . $input->getArgument('process_name') . ', num:' . $input->getArgument('num') . ' success !');
 
 
         $output->writeln('the end.');

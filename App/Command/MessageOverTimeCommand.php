@@ -47,11 +47,7 @@ class MessageOverTimeCommand extends Command
         //$optional_argument = $input->getArgument('optional_argument');
         MessageService::MessageConsumeOverTimeHandle();
         $output->writeln('creating MessageConsumeOverTimeHandle...');
-
-
         $output->writeln('created Procee :' . $input->getArgument('process_name') .  ' success !');
-
-
         $output->writeln('the end.');
     }
 }

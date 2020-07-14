@@ -149,6 +149,7 @@ class IndexController extends ServerController
     {
         // echo "[" . date('Y-m-d H:i:s') . "] Current Use RedisPoolManager Connetction Look Nums:" . RedisPoolManager::getInstance()->getLength() . ",currentNum:" . RedisPoolManager::getInstance()->getCurrentConnectionNums() . PHP_EOL;
         echo $id . "_\r\n";
+        CommonService::setConfig(ServerManager::$config);
         CommonService::setRedis();
         CommonService::setRabbit();
         $rabbit = CommonService::getRabbit();
