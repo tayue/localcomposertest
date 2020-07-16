@@ -10,6 +10,7 @@ namespace Framework\SwServer;
 
 
 use Framework\SwServer\Pool\RabbitPoolManager;
+use Framework\SwServer\Pool\RpcClientPoolManager;
 use Framework\SwServer\Protocol\WebServer;
 use Framework\SwServer\Protocol\GrpcServer;
 use Framework\SwServer\Protocol\RpcServer;
@@ -209,6 +210,7 @@ class ServerManager extends BaseServerManager
             MysqlPoolManager::getInstance(self::$config['mysql_pool'])->clearSpaceResources();
             RedisPoolManager::getInstance(self::$config['redis_pool'])->clearSpaceResources();
             RabbitPoolManager::getInstance(self::$config['rabbit_pool'])->clearSpaceResources();
+            RpcClientPoolManager::getInstance(self::$config['rpc_client_pool'])->clearSpaceResources();
         }
         if (method_exists($this->protocol, 'onStart')) {
             $this->protocol->onStart($server, $worker_id);
