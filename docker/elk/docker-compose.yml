@@ -1,36 +1,48 @@
-version: "3"
+version: '3'
+
 services:
   elasticsearch:
-    image: docker.io/elasticsearch:5.6.5
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    volumes:
-      - ./elasticsearch/data:/usr/share/elasticsearch/data
-    container_name: elasticsearch565
-    hostname: elasticsearch
+    image: elasticsearch:7.3.0
+    container_name: elasticsearch
     restart: always
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-  kibana:
-    image: docker.io/kibana:5.6.5
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-    container_name: kibana565
-    hostname: kibana
+      - cluster.name=elasticsearch   #集群名称为elasticsearch
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" #jvm内存分配为512MB
+      - "discovery.type=single-node" #单节点启动
+      - "TZ=Asia/Shanghai"
+    volumes:
+      - /var/docker/elasticsearch/data:/usr/share/elasticsearch/data
+      - /var/docker/elasticsearch/logs:/usr/share/elasticsearch/logs
+      - /var/docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - /etc/localtime:/etc/localtime
+    ports:
+      - 9200:9200
+      - 9300:9300
+  kibana:
+    image: kibana:7.3.0
+    container_name: kibana
+    restart: always
+    links:
+      - elasticsearch:es  #配置elasticsearch域名为es
     depends_on:
       - elasticsearch
-    restart: always
+    volumes:
+      - /var/docker/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - /var/docker/kibana/data:/usr/share/kibana/data
+      - /etc/localtime:/etc/localtime
     ports:
-      - "5601:5601"
-  filebeat:
-      image: docker.elastic.co/beats/filebeat:5.6.5
-      volumes:
-        - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-        - ./log:/tmp
-      container_name: filebeat565
-      hostname: filebeat
-      restart: always
-      privileged: true
-      depends_on:
-        - elasticsearch
+      - 5601:5601
+  logstash:
+    image: logstash:7.3.0
+    container_name: logstash
+    restart: always
+    volumes:
+      - /var/docker/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - /etc/localtime:/etc/localtime
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch:es #配置elasticsearch域名为es
+    ports:
+      - 5044:5044
