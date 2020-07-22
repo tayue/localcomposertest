@@ -1,0 +1,14 @@
+172.17.0.7
+
+consul 集群
+
+
+docker run --name consul1 -d -v /etc/consul.d:/etc/consul.d:rw -p 8500:8500 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600 consul agent -server -bootstrap-expect 2 -ui -bind=0.0.0.0 -node=agent-one -datacenter=apiserver -config-dir=/etc/consul.d -client=0.0.0.0
+
+docker run --name consul2 -d -v /etc/consul.d:/etc/consul.d:rw -p 8501:8500 consul agent -server -ui -bind=0.0.0.0 -node=agent-two -datacenter=apiserver -config-dir=/etc/consul.d -client=0.0.0.0 -join 172.17.0.4
+
+docker run --name consul3 -d -v /etc/consul.d:/etc/consul.d:rw -p 8502:8500 consul agent -server -ui -bind=0.0.0.0 -node=agent-three -datacenter=apiserver -config-dir=/etc/consul.d -client=0.0.0.0 -join 172.17.0.4
+
+dig @172.17.0.4 -p 8600 swoft.service.consul SRV
+
+http://120.79.137.251/   172.18.80.227

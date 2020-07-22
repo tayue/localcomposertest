@@ -1,22 +1,37 @@
 <?php
 
-use Hyperf\Di\ReflectionManager;
+
 
 require './vendor/autoload.php';//引入predis相关包
 ini_set("display_errors", "On");
 error_reporting(E_ALL | E_STRICT);
-$dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/users', 'App\Controller\BlogControllers@show');
-    // {id} 必须是一个数字 (\d+)
-    $r->addRoute('GET', '/user/{id:\d+}', 'App\Controller\BlogControllers@show');
-    //  /{title} 后缀是可选的
-    $r->addRoute('GET', '/articles/{id:\d+}[/{title}]', 'App\Controller\BlogControllers@article');
-});
+
+use FastRoute\RouteParser\Std;
+use FastRoute\DataGenerator\GroupCountBased;
+use FastRoute\Dispatcher\GroupCountBased as DispatcherGroupCountBased;
+use FastRoute\RouteCollector;
+
+
+
+/** @var RouteCollector $routeCollector */
+$routeCollector = new RouteCollector(
+    new Std, new GroupCountBased
+);
+$routeCollector->addRoute('GET', '/users', 'App\Controller\BlogController@show');
+// {id} 必须是一个数字 (\d+)
+$routeCollector->addRoute(array('GET','POST'), '/user/{id:\d+}', 'App\Controller\BlogController@show');
+//  /{title} 后缀是可选的
+$routeCollector->addRoute('GET', '/articles/{id:\d+}[/{title}]', 'App\Controller\BlogController@article');
+
+$dispatcher=new DispatcherGroupCountBased($routeCollector->getData());
+
+
+
 
 $class = new \ReflectionClass('App\Controller\BlogController');
-var_dump($class->getDocComment());
+
 $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
-print_r($methods);
+
 
 print_r($_SERVER);
 // 获取请求的方法和 URI
@@ -64,5 +79,5 @@ try {
     }
 
 } catch (Exception $e) {
-
+   echo $e->getMessage();
 }

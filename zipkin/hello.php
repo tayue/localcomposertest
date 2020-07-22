@@ -6,7 +6,8 @@ use Zipkin\Propagation\DefaultSamplingFlags;
 use Zipkin\Propagation\Map;
 use Zipkin\Timestamp;
 
-
+ini_set("display_errors", "On");
+error_reporting(E_ALL | E_STRICT);
 
 
 $tracing = create_tracing('hello', '192.168.99.88');

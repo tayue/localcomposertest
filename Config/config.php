@@ -5,9 +5,11 @@
  * Date: 2018/11/5
  * Time: 13:13
  */
+use Framework\SwServer\Rpc\Packet;
 return [
     'id' => 'app',
     'routeRule' => 1, //1:PATHINFO 2:QUERY
+    'custom_routing'=>1, //开启自定义路由解析(使用注解)
     'consulRegister' => false, //是否开启consul服务注册
     'is_swoole_http_server' => true,
     'project_namespace' => 'App', //1:模块化组织 2:非模块化组织
@@ -106,6 +108,9 @@ return [
         'orderService' => [
             'class' => 'App\Service\OrderService'
         ],
+        'rpcServerPacket' => [
+            'class' => Packet::class
+        ]
     ],
     'daos' => [
         'orderDao' => [

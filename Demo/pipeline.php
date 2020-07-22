@@ -5,7 +5,7 @@ error_reporting(E_ALL | E_STRICT);
 
 require_once '../vendor/autoload.php';
 use Framework\Tool\Pipeline;
-
+use Framework\SwServer\Http\PipelineHttpHandleAop;
 
 $arr = array(
     array('min' => 1.5456, 'max' => 2.28548, 'volume' => 23.152),
@@ -116,18 +116,42 @@ class Handler5
         }
     ];
 
+class HttpHandleMiddle{
+    public $handler;
+    public function __construct($handler)
+    {
+        $this->handler=$handler;
+    }
+
+    function handle($request,$callback)
+    {
+        echo '处理器' . "\n";
+        $this->handler->handle($request);
+        return $callback($request);
+    }
+}
+
+class Handler{
+    public function handle($request){
+        $request+=1;
+        return $request;
+    }
+}
+
 try{
-    $pipes1=[Handler1::class.":handle",Handler2::class.":handle",Handler3::class.":handle",Handler4::class.":handle"];
+    //$pipes1=[Handler1::class.":handle",Handler2::class.":handle",Handler3::class.":handle",Handler4::class.":handle"];
     //$pipes=[new Handler1(),new Handler2(),new Handler3(),new Handler4()];
-
-
-  $res= (new Pipeline())->send(function($a){
-      return $a;
-  })->through($pipes1)->then(function ($post) {
-        return $post;
-    }); // 执行输出为 2
-
-    var_dump($res(3));
+    $middles=[new HttpHandleMiddle(new Handler())];
+    $request=1;
+//  $res= (new Pipeline())->send(function($a){
+//      return $a;
+//  })->through($pipes1)->then(function ($post) {
+//        return $post;
+//    }); // 执行输出为 2
+    $res= (new PipelineHttpHandleAop())->send($request)->through($pipes1)->then(function ($request) {
+         return $request;
+    });
+    var_dump($res);
 }catch (Throwable $e){
      //print_r($e);
 }

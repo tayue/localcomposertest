@@ -4,7 +4,7 @@ use Framework\SwServer\Router\Router;
 
 if(Router::getFactory()){
     Router::addGroup('/home', function () {
-        Router::get('/demo/index', 'App\Modules\Home\Controller\DemoController@indexAction');
+        Router::get('/test', 'App\Modules\Home\Controller\TestController@indexAction');
     });
     Router::addServer('grpc', function () {
         Router::addGroup('/grpc.hi', function () {

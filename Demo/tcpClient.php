@@ -10,30 +10,41 @@ use Framework\SwServer\Rpc\Packet\JsonPacket;
 use Framework\SwServer\Rpc\Protocol;
 use App\Rpc\Service\RpcUserService;
 use App\Rpc\Contract\UserInterface;
+/**
+ * @return array
+ */
+ function defaultSetting(): array
+{
+    return [
+        'open_eof_check' => true,
+        'open_eof_split' => true,
+        'package_eof'    => "\r\n\r\n",
+    ];
+}
+function coroClient()
+{
+    go(function () {
+        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        if (!$client->connect('192.168.99.88', 8888)) {
+            exit("connect failed\n");
+        }
+        $client->set(defaultSetting());
+        $packet = new JsonPacket();
+        try {
+            $protocol = Protocol::new("2.0", UserInterface::class, 'getList', array(1, 'type'), []);
+            $data = $packet->encode($protocol);
+            $client->send($data);
+        } catch (\Throwable $e) {
+            print_r($e->getTrace());
+        }
+        $res = $client->recv();
+        $responce = $packet->decodeResponse($res);
+        print_r($responce);
+        echo "Recv : " . $res . "\n";
+    });
+}
 
-//function coroClient()
-//{
-//    go(function () {
-//        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
-//        if (!$client->connect('192.168.99.88', 9501)) {
-//            exit("connect failed\n");
-//        }
-//        $packet = new JsonPacket();
-//        try {
-//            $protocol = Protocol::new("2.0", UserInterface::class, 'getList', array(1, 'type'), []);
-//            $data = $packet->encode($protocol);
-//            $client->send($data);
-//        } catch (\Throwable $e) {
-//            print_r($e->getTrace());
-//        }
-//        $res = $client->recv();
-//        $responce = $packet->decodeResponse($res);
-//        print_r($responce);
-//        echo "Recv : " . $res . "\n";
-//    });
-//}
-//
-//coroClient();return;
+coroClient();return;
 
 $client = new \swoole_client(SWOOLE_SOCK_TCP);
 if (!$client->connect('192.168.99.88', 8888)) {

@@ -177,7 +177,6 @@ class ServerManager extends BaseServerManager
         if (method_exists($this->protocol, 'onMasterStart')) {
             $this->protocol->onMasterStart($serv);
         }
-        self::$config['consulRegister'] && ServerManager::$eventManager->trigger("consulServiceRegister");
     }
 
     function onMasterStop($serv)
@@ -207,11 +206,13 @@ class ServerManager extends BaseServerManager
             $this->setProcessName($this->getProcessName() . ': task');
         } else {
             $this->setProcessName($this->getProcessName() . ': worker');
-            MysqlPoolManager::getInstance(self::$config['mysql_pool'])->clearSpaceResources();
-            RedisPoolManager::getInstance(self::$config['redis_pool'])->clearSpaceResources();
-            RabbitPoolManager::getInstance(self::$config['rabbit_pool'])->clearSpaceResources();
-            RpcClientPoolManager::getInstance(self::$config['rpc_client_pool'])->clearSpaceResources();
+            self::$config['consulRegister'] && ServerManager::$eventManager->trigger("consulServiceRegister");
+            self::$config['mysql_pool'] && MysqlPoolManager::getInstance(self::$config['mysql_pool'])->clearSpaceResources();
+            self::$config['redis_pool'] && RedisPoolManager::getInstance(self::$config['redis_pool'])->clearSpaceResources();
+            self::$config['rabbit_pool'] && RabbitPoolManager::getInstance(self::$config['rabbit_pool'])->clearSpaceResources();
+            self::$config['rpc_client_pool'] && RpcClientPoolManager::getInstance(self::$config['rpc_client_pool'])->clearSpaceResources();
         }
+
         if (method_exists($this->protocol, 'onStart')) {
             $this->protocol->onStart($server, $worker_id);
         }

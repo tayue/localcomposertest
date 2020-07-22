@@ -77577,10 +77577,13 @@ while (!$splPriorityQueue->isEmpty()) {
     var_dump($splPriorityQueue->extract());
 }
 
+$arr=[1,2,3];
 
-
-//$backJson=base64_decode($json);
-//print_r(json_decode(gzdecode(base64_decode($json)),true));
+$arr=json_encode($arr);
+$return_data=base64_encode(gzencode($arr, 9));
+$backJson=base64_decode($json);
+var_dump($backJson);
+print_r(json_decode(gzdecode(base64_decode($return_data)),true));
 
 
 

@@ -19,7 +19,6 @@ use App\Aop\ProxyVisitorDemo;
 use App\Aop\ProxyFactoryDemo;
 use App\Dao\OrderDao;
 
-include_once './App/Config/defines.php';
 $config = include_once './App/Config/config.php';
 $serverConfig = include_once './App/Config/server.php';
 $config = array_merge($config, $serverConfig);
@@ -35,6 +34,9 @@ AnnotationRegister::getInstance([
 $diPool = DiPool::getInstance();
 $className = OrderDao::class;
 $ans = AnnotationRegister::getAnnotations();
+$aspects=AnnotationRegister::getAspectAnnotations();
+print_r($ans);
+print_r($aspects);
 initAspectAopAnnotationClass();
 
 
