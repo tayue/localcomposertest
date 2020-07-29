@@ -19,12 +19,12 @@ class Agent implements AgentInterface
     public $config;
     private $consul;
 
-    public function __construct($config=[])
+    public function __construct($config = [])
     {
-        $this->config = $config;
+        $this->createConsul($config);
     }
 
-    public function createConsul($config = [])
+    public function createConsul($config)
     {
         if ($config) {
             $this->config = array_merge($this->config, $config);
@@ -199,7 +199,7 @@ class Agent implements AgentInterface
      * @throws ServerException
      */
     public function registerService(array $service): Response
-    {
+    {print_r($service);
         $params = [
             'body' => $service,
         ];
