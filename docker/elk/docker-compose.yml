@@ -16,6 +16,8 @@ services:
       - /var/docker/elasticsearch/logs:/usr/share/elasticsearch/logs
       - /var/docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - /etc/localtime:/etc/localtime
+    networks:
+      - elk
     ports:
       - 9200:9200
       - 9300:9300
@@ -23,8 +25,8 @@ services:
     image: kibana:7.3.0
     container_name: kibana
     restart: always
-    links:
-      - elasticsearch:es  #配置elasticsearch域名为es
+    networks:
+      - elk
     depends_on:
       - elasticsearch
     volumes:
@@ -42,7 +44,10 @@ services:
       - /etc/localtime:/etc/localtime
     depends_on:
       - elasticsearch
-    links:
-      - elasticsearch:es #配置elasticsearch域名为es
+    networks:
+      - elk
     ports:
       - 5044:5044
+networks:
+  elk:
+    driver: bridge

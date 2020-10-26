@@ -25,7 +25,7 @@ filebeat.inputs:
 
     # Paths that should be crawled and fetched. Glob based paths.
     paths:
-      - /var/log/mysql/*.log  #慢查询日志路径
+      - /www/server/data/*.log  #慢查询日志路径
       #- c:\programdata\elasticsearch\logs\*
     document_type: mysqlslow
     multiline:
@@ -152,7 +152,7 @@ setup.kibana:
 #-------------------------- Elasticsearch output ------------------------------
 #output.elasticsearch:
 # Array of hosts to connect to.
-#hosts: ["192.168.99.88:9200"]
+#hosts: ["192.168.99.89:9200"]
 
 # Optional protocol and basic auth credentials.
 #protocol: "https"
@@ -162,7 +162,7 @@ setup.kibana:
 #----------------------------- Logstash output --------------------------------
 output.logstash:
   # The Logstash hosts
-  hosts: ["192.168.99.88:5044"]
+  hosts: ["192.168.99.89:5044"]
 
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
