@@ -1,0 +1,1 @@
+docker run --restart=always  --name filebeat --user=root --network docker_elk -d -v /www/server/data/:/logs/ -v /var/docker/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml  docker.io/store/elastic/filebeat:7.3.0

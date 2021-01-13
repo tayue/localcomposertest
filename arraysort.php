@@ -6,33 +6,39 @@
  * Time: 11:00
  */
 
-//$data[] = array('volume' => 67, 'edition' => 2);
-//$data[] = array('volume' => 86, 'edition' => 1);
-//$data[] = array('volume' => 85, 'edition' => 6);
-//$data[] = array('volume' => 98, 'edition' => 2);
-//$data[] = array('volume' => 86, 'edition' => 6);
-//$data[] = array('volume' => 67, 'edition' => 7);
+ $num1 = array(3, 5, 4, 3);
+ $num2 = array(27, 50, 44, 78);
+ array_multisort($num1, SORT_ASC, $num2, SORT_DESC);
+
+ print_r($num1);
+ print_r($num2);
+ //result: Array ( [0] => 3 [1] => 3 [2] => 4 [3] => 5 ) Array ( [0] => 78 [1] => 27 [2] => 44 [3] => 50 )
+
+$data[] = array('volume' => 67, 'edition' => 2);
+$data[] = array('volume' => 86, 'edition' => 1);
+$data[] = array('volume' => 85, 'edition' => 6);
+$data[] = array('volume' => 98, 'edition' => 2);
+$data[] = array('volume' => 86, 'edition' => 6);
+$data[] = array('volume' => 67, 'edition' => 7);
 //
 //
 //// 取得列的列表
-//foreach ($data as $key => $row) {
-//    $volume[$key]  = $row['volume'];
-//    $edition[$key] = $row['edition'];
-//}
-//
+foreach ($data as $key => $row) {
+    $volume[$key]  = $row['volume'];
+    $edition[$key] = $row['edition'];
+}
+
+//多维数组中 单个字段进行排序
+array_multisort(array_column($data,'volume'), SORT_ASC,$data);//对单个值排序
+
+
+
+
+////多维数组中 多个字段进行排序
 //// 将数据根据 volume 降序排列，根据 edition 升序排列
 //// 把 $data 作为最后一个参数，以通用键排序
-//array_multisort($volume, SORT_DESC, $edition, SORT_DESC, $data);
-//
-////
-//$a="<p>是是是</p>";
-//$str=htmlentities($a,ENT_NOQUOTES,"UTF-8");
-//echo nl2br($str."\n");
-//$str1=htmlspecialchars($a);
-//echo nl2br($str1."\n");
-//
-//$str2=htmlspecialchars_decode($str1);
-//echo $str2;
+array_multisort(array_column($data,'volume'), SORT_DESC, array_column($data,'edition'), SORT_DESC, $data);
+
 
 
 function mbStrreplace($content,$to_encoding="UTF-8",$from_encoding="UTF-8") {

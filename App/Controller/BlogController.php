@@ -8,8 +8,11 @@
 
 namespace App\Controller;
 
+use ServerFramework\Di\Container;
+use ServerFramework\Tool;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Swoole\Coroutine as SwCoroutine;
 
 /**
  * Class UserController
@@ -18,11 +21,12 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class BlogController
 {
-    // This property is used by the marking store
-    // 此属性被marking stroe所用
+
     public $marking;
     public $title;
     public $content;
+    public $tool;
+
 
     /**
      * 匹配 URL: /blog
@@ -53,15 +57,36 @@ class BlogController
 
     }
 
-    /**
-     * 匹配 URL: /blog/*
-     * @Route("/blog/{id}", name="blog_show")
-     * @param mixed $id
+    /**依赖注入演示
+     * @param Tool $tool
      */
-    public function show($id)
+    public function test(Tool $tool){
+        $this->tool = $tool;
+        $di = Container::getInstance();
+        //print_r($di);
+        $person = $di['person'];
+        //print_r($person);
+        print_r($di[Tool::class]);
+       // print_r($di->getSingletons());
+        echo $this->tool->display();
+    }
+
+
+    public function show($id,Tool $tool)
     {
-        echo "show_______________";
-        echo "id:" . $id;
+        //echo "show_______________";
+        $this->tool = $tool;
+        $di = Container::getInstance();
+        //print_r($di->getSingletons());
+
+        echo $this->tool->display();
+        print_r($di['person']);
+        //print_r($di->getSingletons());
+        print_r(get_included_files());
+
+        echo "id:" . $id."\r\n";
+        echo "currentSwooleCid:".SwCoroutine::getCid()."\r\n";
+        echo 'runtimeMemory:'.round(memory_get_usage()/1024/1024, 2).'MB', '';
     }
 
     public function article($id, $title)

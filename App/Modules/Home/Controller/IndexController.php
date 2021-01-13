@@ -8,6 +8,7 @@
 
 namespace App\Modules\Home\Controller;
 
+use App\Rpc\Contract\UserInterface;
 use App\Service\Util;
 use App\Listener\SendSmsListener;
 use App\Listener\SendEmailsListener;
@@ -59,7 +60,6 @@ use App\Service\RabbitTransactionService;
 use App\Service\CommonService;
 use App\Service\MessageService;
 use Framework\SwServer\Pool\RpcClientPoolManager;
-use App\Rpc\Contract\UserInterface;
 use Framework\SwServer\Router\Annotation\RequestMapping;
 
 /**
@@ -131,6 +131,7 @@ class IndexController extends ServerController
 
     private function sendMessage($msg_id)
     {
+
         $exchangeName = 'tradeExchange';
         $routeKey = '/trade';
         $queueName = 'trade';
@@ -188,10 +189,10 @@ class IndexController extends ServerController
         CommonService::setRabbit();
         echo $this->request->fd."\r\n";
         $rb=DiPool::getInstance()->getSingleton(RabbitNotifyTransactionService::class);
-        //for($i=1;$i<100;$i++){
+        for($i=1;$i<100;$i++){
            $res=$rb->order();
            print_r($res);
-       // }
+        }
 
         //CommonService::setRpcClient();
         //CommonService::setMysql();
@@ -476,8 +477,8 @@ class IndexController extends ServerController
 //        $components=DiPool::getInstance()->getComponents();
 //        print_r($components);
 //        print_r(ServerManager::getApp()->view);
-//        ServerManager::getApp()->view->assign('name', 'Http Server  sssss !!!');
-//        ServerManager::getApp()->view->display('index.html');
+        ServerManager::getApp()->view->assign('name', 'Http Server  sssss !!!');
+        ServerManager::getApp()->view->display('index.html');
 
     }
 

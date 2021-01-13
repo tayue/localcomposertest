@@ -1,0 +1,19 @@
+{
+  "name": "six",
+  "description": "six framework",
+  "keywords": [
+    "php",
+    "swoole",
+    "sixStar"
+  ],
+  "autoload": {
+    "psr-4": {
+       "App\\": "application/",
+       "Six\\":"framework/Six"
+    }
+  },
+  "require": {
+    "php": ">=7.0",
+    "ext-swoole":">=4.0"
+  }
+}

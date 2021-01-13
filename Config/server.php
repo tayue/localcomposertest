@@ -10,7 +10,7 @@ return [
     'server' => [
         'pid_file' => ROOT_PATH . '/Data/pid.pid',
         'server_type' => 'WEB_SERVER',
-        'listen_address' => '192.168.99.88',
+        'listen_address' => '192.168.99.89',
         'listen_port' => 9501,
         'www_user' => 'root',
         'setting' => [
@@ -32,7 +32,7 @@ return [
 //            'package_max_length' => 2000000,  //协议最大长度
         ],
         'listen' => [ //设置监听Rpc服务
-            ['host' => '0.0.0.0', 'port' => 8888, 'sock_type' => SWOOLE_SOCK_TCP],
+            ['host' => '0.0.0.0', 'port' => 8889, 'sock_type' => SWOOLE_SOCK_TCP],
             ['host' => '0.0.0.0', 'port' => 9988, 'sock_type' => SWOOLE_SOCK_TCP],
         ]
     ],
@@ -62,7 +62,7 @@ return [
         // 数据库类型
         'type' => 'mysql',
         // 服务器地址
-        'hostname' => '192.168.99.88',
+        'hostname' => '192.168.99.89',
         // 数据库名
         'database' => 'test',
         // 用户名
@@ -114,7 +114,7 @@ return [
         'pool_get_timeout' => 4, //当在此时间内未获得到一个连接，会立即返回。（表示所以的连接都已在使用中）
     ],
     'coro_mysql_pool' => [
-        'host' => '192.168.99.88',   //数据库ip
+        'host' => '192.168.99.89',   //数据库ip
         'port' => 3306,          //数据库端口
         'user' => 'root',        //数据库用户名
         'username' => 'root',        //数据库用户名
@@ -129,7 +129,7 @@ return [
         'pool_get_timeout' => 4, //当在此时间内未获得到一个连接，会立即返回。（表示所以的连接都已在使用中）
     ],
     'redis_pool' => [
-        'host' => '127.0.0.1',
+        'host' => '192.168.99.89',
         'port' => 6379,
         'database' => 0,
         'timeout' => 0.5,       //数据库连接超时时间
@@ -139,11 +139,11 @@ return [
         'pool_get_timeout' => 1, //当在此时间内未获得到一个连接，会立即返回。（表示所以的连接都已在使用中）
     ],
     'rabbit_pool' => [
-        'host' => '192.168.99.88',   //ip
+        'host' => '192.168.99.89',   //ip
         'port' => 5672,          //端口
-        'user' => 'admin',        //用户名
-        'password' => 'admin', //密码
-        'vhost' => 'my_vhost',   //默认主机
+        'user' => 'guest',        //用户名
+        'password' => 'guest', //密码
+        'vhost' => 'myhost',   //默认主机
         'space_time' => 10 * 3600,       //100s间隔
         'mix_pool_size' => 3,     //最小连接池大小
         'max_pool_size' => 1200,    //最大连接池大小
@@ -151,7 +151,7 @@ return [
     ],
     'rpc_client_pool' => [
         'clients' => [
-            '0.0.0.0:8888', //微服务中的服务端地址
+            '0.0.0.0:8889', //微服务中的服务端地址
             '0.0.0.0:9988',
         ],
         'timeout' => 1.5,

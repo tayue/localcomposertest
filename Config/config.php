@@ -42,13 +42,13 @@ return [
                 // 数据库类型
                 'type' => 'mysql',
                 // 服务器地址
-                'hostname' => 'localhost',
+                'hostname' => '192.168.99.89',
                 // 数据库名
-                'database' => 'test',
+                'database' => 'hyperf',
                 // 用户名
-                'username' => 'root',
+                'username' => 'hyperf',
                 // 密码
-                'password' => 'root',
+                'password' => 'hyperf',
                 // 端口
                 'hostport' => '3306',
                 // 连接dsn
@@ -120,12 +120,12 @@ return [
     'tracer' => [
         [
             'name' => 'tyswf',
-            'ipv4' => '192.168.99.88',
+            'ipv4' => '192.168.99.89',
             'ipv6' => null,
             'port' => 9501,
         ],
         [
-            'endpoint_url' => 'http://192.168.99.88:9411/api/v2/spans',
+            'endpoint_url' => 'http://192.168.99.89:9411/api/v2/spans',
             'timeout' => 1,
         ]
     ],

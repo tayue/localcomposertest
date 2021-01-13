@@ -2,10 +2,11 @@
 
 use Swoole\Coroutine;
 
- function call($cb, array $args = [])
+function call($cb, array $args = [])
 {
     $ret = null;
-    if (is_object($cb) || (\is_string($cb) && \function_exists($cb))) { echo '111';
+    if (is_object($cb) || (\is_string($cb) && \function_exists($cb))) {
+        echo '111';
         $ret = $cb(...$args);
     } elseif (\is_array($cb)) {
         list($obj, $mhd) = $cb;
@@ -20,12 +21,13 @@ use Swoole\Coroutine;
 
     return $ret;
 }
-$a=function(){
+
+$a = function () {
     echo '333';
 };
 
-var_dump(is_object($a),$a instanceof Closure);
-$a=call($a);
+var_dump(is_object($a), $a instanceof Closure);
+$a = call($a);
 var_dump($a);
 
 ////php 闭包用法

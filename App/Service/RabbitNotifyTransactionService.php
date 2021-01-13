@@ -61,7 +61,7 @@ class RabbitNotifyTransactionService
             'version'=>1,
             'create_time'=>time(),
             'message_body'=>['order_id'=>uniqid(),'shop_id'=>2],
-            'notify_url'=>'http://192.168.99.88:9501/site/index/notify',//通知地址
+            'notify_url'=>'http://192.168.99.89:9501/site/index/notify',//通知地址
             'notify_rule'=>[1=>5,2=>10,3=>15],//单位为秒
             'notify_retries_number'=>0, //重试次数，
             'default_delay_time'=>1,//毫秒为单位

@@ -1,8 +1,6 @@
 <?php
 
-
-
-require './vendor/autoload.php';//引入predis相关包
+require './vendor/autoload.php';
 ini_set("display_errors", "On");
 error_reporting(E_ALL | E_STRICT);
 
@@ -17,7 +15,7 @@ use FastRoute\RouteCollector;
 $routeCollector = new RouteCollector(
     new Std, new GroupCountBased
 );
-$routeCollector->addRoute('GET', '/users', 'App\Controller\BlogController@show');
+//$routeCollector->addRoute('GET', '/users', 'App\Controller\BlogController@show');
 // {id} 必须是一个数字 (\d+)
 $routeCollector->addRoute(array('GET','POST'), '/user/{id:\d+}', 'App\Controller\BlogController@show');
 //  /{title} 后缀是可选的

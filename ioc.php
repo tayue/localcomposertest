@@ -1,6 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
+ * PHP反射机制实现自动依赖注入
  * User: hdeng
  * Date: 2019/6/21
  * Time: 9:27
