@@ -52,7 +52,7 @@ abstract class BaseContainer implements ContainerInterface
      * @return array
      * @throws \ReflectionException
      */
-    public function resolveClassMethodDependencies($className, $method)
+    public function resolveClassMethodDependencies($className, $method = '__construct')
     {
         $parameters = []; // 记录参数，和参数类型
         if (!\method_exists($className, $method)) {
