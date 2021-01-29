@@ -3,7 +3,7 @@
  * Class AbstractContainer
  */
 
-namespace Framework\SwServer\Pool;
+namespace ServerFramework\Di;
 
 use Exception;
 use Psr\Container\ContainerInterface;
@@ -19,6 +19,13 @@ abstract class BaseContainer implements ContainerInterface
      * @var array
      */
     protected $definitions = [];
+
+    public function __construct($definitions = [])
+    {
+        foreach ($definitions as $id => $definition) {
+            $this->injection($id, $definition);
+        }
+    }
 
     public function getSingletons()
     {
@@ -48,9 +55,6 @@ abstract class BaseContainer implements ContainerInterface
     public function resolveClassMethodDependencies($className, $method)
     {
         $parameters = []; // 记录参数，和参数类型
-        if (!$className || !$method) {
-            return $parameters;
-        }
         if (!\method_exists($className, $method)) {
             return $parameters;
         }
@@ -67,7 +71,7 @@ abstract class BaseContainer implements ContainerInterface
                 $paramClassParams = $this->resolveClassMethodDependencies($paramClassName);
                 $definitions = ['class' => $paramClassName];
                 if ($paramClassParams) {
-                    $definitions['constructor'] = $paramClassParams;
+                    $definitions = array_merge($definitions, $paramClassParams);
                 }
                 $parameters[] = $this->registerObject($paramClassName, $definitions);
             }
@@ -76,16 +80,12 @@ abstract class BaseContainer implements ContainerInterface
         return $parameters;
     }
 
-    /**注册对象
-     * @param $paramClassName
-     * @param $definitions
-     * @return mixed|object
-     * @throws Exception
-     */
     public function registerObject($paramClassName, $definitions)
     {
         if (isset($this->_singletons[$paramClassName])) {
             return $this->_singletons[$paramClassName];
+        } elseif (isset($this->resolvedEntries[$paramClassName])) {
+            return $this->resolvedEntries[$paramClassName];
         } else {
             return $this->build($paramClassName, $definitions);
         }
@@ -103,11 +103,6 @@ abstract class BaseContainer implements ContainerInterface
         return $this->make($id);
     }
 
-    /**生成对象实例
-     * @param $name
-     * @return mixed|object
-     * @throws \ReflectionException
-     */
     public function make($name)
     {
         if (!is_string($name)) {
@@ -182,7 +177,7 @@ abstract class BaseContainer implements ContainerInterface
     {
         if (isset($this->_singletons[$class])) unset($this->_singletons[$class]);
         class_exists($class) && $object && $this->_singletons[$class] = $object;
-        return $this->_singletons[$class];
+        return $object;
     }
 
     /**获取类的反射依赖
@@ -240,7 +235,7 @@ abstract class BaseContainer implements ContainerInterface
             if ($param->getClass()) {
                 $paramClassName = $param->getClass()->name;
                 $paramObject = $this->reflector($paramClassName);
-                if ($paramName && $paramObject) $this->setSingletonByObject($paramClassName, $paramObject);
+                if ($paramClassName && $paramObject) $this->setSingletonByObject($paramClassName, $paramObject);
                 $parameters[] = $paramObject;
             } elseif ($param->isArray()) {
                 if ($param->isDefaultValueAvailable()) {
@@ -283,16 +278,6 @@ abstract class BaseContainer implements ContainerInterface
             throw new Exception('数组必须包含类定义');
         }
         $this->definitions[$id] = $concrete;
-    }
-
-    public function getResolvedEntries()
-    {
-        return $this->resolvedEntries;
-    }
-
-    public function getParams()
-    {
-        return $this->_params;
     }
 
 }

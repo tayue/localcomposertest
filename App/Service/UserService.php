@@ -6,10 +6,10 @@ namespace App\Service;
 
 use Framework\SwServer\Pool\DiPool;
 
-use Framework\SwServer\Rpc\Annotation\Mapping\RpcService;
 
 
-class UserService
+
+class UserService implements UserInterface
 {
     public function notify($orderData)
     {
@@ -28,5 +28,10 @@ class UserService
 
     public function getList(int $uid, string $type){
         return [$uid,$type];
+    }
+
+    public function eat()
+    {
+        echo "eat..........\r\n";
     }
 }

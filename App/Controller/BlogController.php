@@ -8,8 +8,9 @@
 
 namespace App\Controller;
 
+use ServerFramework\Bean\Tool;
 use ServerFramework\Di\Container;
-use ServerFramework\Tool;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Swoole\Coroutine as SwCoroutine;
@@ -82,7 +83,9 @@ class BlogController
         echo $this->tool->display();
         print_r($di['person']);
         //print_r($di->getSingletons());
-        print_r(get_included_files());
+        //print_r(get_included_files());
+
+        echo $ddd;
 
         echo "id:" . $id."\r\n";
         echo "currentSwooleCid:".SwCoroutine::getCid()."\r\n";

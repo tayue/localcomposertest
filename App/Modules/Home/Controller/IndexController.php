@@ -188,11 +188,21 @@ class IndexController extends ServerController
         CommonService::setRedis();
         CommonService::setRabbit();
         echo $this->request->fd."\r\n";
-        $rb=DiPool::getInstance()->getSingleton(RabbitNotifyTransactionService::class);
-        for($i=1;$i<100;$i++){
-           $res=$rb->order();
-           print_r($res);
-        }
+                $orderDao=ServerManager::getApp()->orderDao;
+        print_r($orderDao);
+        print_r($orderDao->getUserService()->eat());
+        echo "<hr/>";
+        //$dis=DiPool::getInstance()->getSingletons();
+
+        $di = DiPool::getInstance();
+        print_r($di[RabbitNotifyTransactionService::class]);
+        $dis=DiPool::getInstance()->getSingletons();
+
+//        $rb=DiPool::getInstance()->getSingleton(RabbitNotifyTransactionService::class);
+//        for($i=1;$i<100;$i++){
+//           $res=$rb->order();
+//           print_r($res);
+//        }
 
         //CommonService::setRpcClient();
         //CommonService::setMysql();
@@ -207,6 +217,7 @@ class IndexController extends ServerController
 //        print_r($redis);
 //        print_r($mysql->table('user')->getConnection());
         echo CoroutineManager::getInstance()->getCoroutineId() . "_____\r\n";
+      //  print_r(ServerManager::getApp()->view);
 //        $this->rpcClientDemo();
 
 
@@ -478,7 +489,7 @@ class IndexController extends ServerController
 //        print_r($components);
 //        print_r(ServerManager::getApp()->view);
         ServerManager::getApp()->view->assign('name', 'Http Server  sssss !!!');
-        ServerManager::getApp()->view->display('index.html');
+        ServerManager::getApp()->view->display('Home/Index/index.html');
 
     }
 
